@@ -10,27 +10,27 @@
 <body class="font-sans m-0 p-8 bg-gray-900 text-gray-200">
     <h1 class="mb-4 text-2xl font-bold">Last.fm Embed Generator</h1>
     <div class="flex gap-8 flex-wrap">
-        <form id="generator" class="flex-1 min-w-[280px] grid gap-3 bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
+        <form id="generator" class="flex-1 min-w-[280px] max-w-full grid gap-3 bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
             <label class="flex flex-col text-sm">
                 Username
-                <input type="text" id="user" required class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                <input type="text" id="user" required class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1" placeholder="Enter your username.">
             </label>
             <label class="flex flex-col text-sm">
                 Endpoint
-                <select id="endpoint" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                <select id="endpoint" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                     <option value="currently-playing">Currently Playing</option>
                     <option value="top-tracks">Top Tracks</option>
                 </select>
             </label>
             <label class="flex flex-col text-sm">
                 Theme
-                <select id="theme" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
+                <select id="theme" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
             </label>
             <label class="flex flex-col text-sm">
                 Show Profile
-                <select id="showProfile" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                <select id="showProfile" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <option value="true" selected>Yes</option>
                     <option value="false">No</option>
-                    <option value="true">Yes</option>
                 </select>
             </label>
 
@@ -38,11 +38,11 @@
             <div id="topControls" class="hidden">
                 <label class="flex flex-col text-sm">
                     Limit
-                    <input type="number" id="limit" value="5" min="1" max="50" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <input type="number" id="limit" value="5" min="1" max="50" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                 </label>
                 <label class="flex flex-col text-sm">
                     Period
-                    <select id="period" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <select id="period" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                         <option value="overall">All Time</option>
                         <option value="7day">Last 7 Days</option>
                         <option value="1month">Last Month</option>
@@ -53,7 +53,7 @@
                 </label>
                 <label class="flex flex-col text-sm">
                     Layout
-                    <select id="layout" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <select id="layout" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                         <option value="vertical">Vertical</option>
                         <option value="horizontal">Horizontal</option>
                     </select>
@@ -61,17 +61,17 @@
                 <div id="gridControls" class="grid gap-3">
                     <label class="flex flex-col text-sm">
                         Rows
-                        <input type="number" id="rows" value="0" min="0" max="10" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                        <input type="number" id="rows" value="0" min="0" max="10" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                     </label>
                     <label class="flex flex-col text-sm">
                         Columns
-                        <input type="number" id="columns" value="0" min="0" max="5" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                        <input type="number" id="columns" value="0" min="0" max="5" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                     </label>
                 </div>
                 <div id="horizontalControls" class="hidden">
                     <label class="flex flex-col text-sm">
                         Items per Row
-                        <input type="number" id="itemsPerRow" value="5" min="1" max="10" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                        <input type="number" id="itemsPerRow" value="5" min="1" max="10" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                     </label>
                 </div>
             </div>
@@ -87,7 +87,7 @@
 
             <div class="output mt-4 flex flex-col gap-2">
                 <div class="url-box flex gap-2">
-                    <input type="text" id="urlOutput" class="url-input flex-1 px-2 py-1 font-mono bg-gray-700 text-gray-200 border border-gray-600 rounded" readonly>
+                    <input type="text" id="urlOutput" class="url-input flex-1 px-2 py-1 font-mono w-full bg-gray-700 text-gray-200 border border-gray-600 rounded" readonly>
                     <button type="button" id="copyBtn" class="bg-blue-600 text-white rounded border-none px-4 py-2 cursor-pointer hover:bg-blue-700">Copy</button>
                 </div>
                 <p class="text-sm text-gray-400 mt-2">Images may take a second to reflect changes, due to caching.</p>
