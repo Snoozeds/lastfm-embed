@@ -37,11 +37,11 @@
       color: var(--url-color);
       text-decoration: none;
     }
-    .profile-link:hover { 
-      text-decoration: underline; 
+    .profile-link:hover {
+      text-decoration: underline;
     }
-    .h3-suffix { 
-      margin-left: 0.25rem; 
+    .h3-suffix {
+      margin-left: 0.25rem;
     }
     ul {
       list-style: none;
@@ -53,6 +53,7 @@
       display: grid;
       grid-template-columns: repeat({{itemsPerRow}}, minmax(0, 1fr));
       gap: 0.75rem;
+      align-items: start;
     }
     li.horizontal {
       display: flex;
@@ -64,9 +65,11 @@
       box-sizing: border-box;
       border-radius: 8px;
       transition: background 0.2s;
+      height: 100%;
+      min-height: 180px;
     }
-    li.horizontal:hover { 
-      background: rgba(0,0,0,0.03); 
+    li.horizontal:hover {
+      background: rgba(0,0,0,0.03);
     }
     li.horizontal img {
       width: 80px;
@@ -74,6 +77,15 @@
       margin-bottom: 0.5rem;
       object-fit: cover;
       border-radius: 6px;
+      flex-shrink: 0;
+    }
+    li.horizontal .track-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      flex-grow: 1;
+      width: 100%;
+      min-height: 0;
     }
     .horizontal .track-name,
     .horizontal .artist-name {
@@ -83,8 +95,25 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-align: center;
+      word-wrap: break-word;
+      hyphens: auto;
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
     }
-    /* Vertical layout */
+    .horizontal .track-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+      min-height: 2.6em;
+    }
+    .horizontal .artist-name {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      min-height: 2.2em;
+    }
+    .horizontal .track-stats {
+      margin-top: auto;
+      padding-top: 0.25rem;
+    }
     ul.vertical {
       display: grid;
       gap: 0.75rem;
@@ -97,9 +126,10 @@
       padding: 0.5rem;
       border-radius: 8px;
       transition: background 0.2s;
+      min-height: 72px;
     }
-    li.vertical:hover { 
-      background: rgba(0,0,0,0.03); 
+    li.vertical:hover {
+      background: rgba(0,0,0,0.03);
     }
     li.vertical img {
       width: 60px;
@@ -108,14 +138,32 @@
       object-fit: cover;
       border-radius: 6px;
     }
+    li.vertical .track-info {
+      flex-grow: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
     .vertical .track-name,
     .vertical .artist-name {
       display: -webkit-box;
-      line-clamp: 2;
+      line-clamp: 1;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-align: left;
+      word-wrap: break-word;
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+    }
+    .vertical .track-name {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .vertical .artist-name {
+      font-size: 0.85rem;
+      opacity: 0.8;
     }
     .track-info {
       overflow: hidden;
@@ -131,35 +179,53 @@
       color: var(--url-color);
     }
     .track-stats {
-      font-size: 0.85rem;
-      margin-top: 0.25rem;
+      font-size: 0.8rem;
       color: var(--scrobble-color);
+      white-space: nowrap;
     }
     /* Responsive adjustments */
     @media (max-width: 720px) {
-      li.horizontal img { 
-        width: 60px; 
-        height: 60px; 
+      li.horizontal {
+        min-height: 160px;
       }
-      li.vertical img { 
-        width: 50px; 
-        height: 50px; 
+      li.horizontal img {
+        width: 60px;
+        height: 60px;
+      }
+      .horizontal .track-name {
+        font-size: 0.85rem;
+      }
+      .horizontal .artist-name {
+        font-size: 0.8rem;
+      }
+      li.vertical img {
+        width: 50px;
+        height: 50px;
+      }
+      li.vertical {
+        min-height: 62px;
       }
     }
     @media (max-width: 500px) {
-      li.horizontal { 
-        flex: 1 1 calc((100% / 3) - 0.75rem); 
+      ul.horizontal {
+        grid-template-columns: repeat(3, 1fr);
       }
-      ul.vertical { 
-        grid-template-columns: 1fr; 
+      li.horizontal {
+        min-height: 140px;
+      }
+      ul.vertical {
+        grid-template-columns: 1fr;
       }
     }
     @media (max-width: 360px) {
-      li.horizontal { 
-        flex: 1 1 100%; 
+      ul.horizontal {
+        grid-template-columns: repeat(2, 1fr);
       }
-      ul.vertical { 
-        grid-template-columns: 1fr; 
+      li.horizontal {
+        min-height: 160px;
+      }
+      ul.vertical {
+        grid-template-columns: 1fr;
       }
     }
   </style>
