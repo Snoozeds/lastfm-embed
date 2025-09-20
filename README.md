@@ -84,7 +84,7 @@ myTheme: { bg: "#ffff", text: "#000000", url: "#0000ffff", scrobble: "#ffff" },
 
 ## Notes
 
-- All tracks in the preview can use last.fm's **default image** (`/images/default.jpg`) if a real album cover is not available.  
+- All tracks in the preview can use last.fm's **default image** (`/public/images/default.jpg`) if a real album cover is not available.  
 
 ---
 
