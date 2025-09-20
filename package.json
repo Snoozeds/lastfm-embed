@@ -1,0 +1,6 @@
+{
+  "name": "lastfm-embed",
+  "module": "index.js",
+  "type": "module",
+  "private": true
+}

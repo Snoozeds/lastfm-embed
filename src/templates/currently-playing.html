@@ -1,0 +1,172 @@
+<div class="card">
+    <h3>
+        {{#ifShowProfile}}
+        <a class="profile-link" href="https://www.last.fm/user/{{username}}" target="_blank">{{username}}</a>'s
+        {{/ifShowProfile}}
+        Currently Playing
+    </h3>
+
+    {{#ifNowPlaying}}
+    <div class="track-card">
+        <img src="{{trackImage}}" alt="{{trackName}} cover" />
+        <div class="track-info">
+            <span class="track-name"><a href="{{trackUrl}}" target="_blank">{{trackName}}</a></span>
+            <span class="artist-name"><a href="{{artistUrl}}" target="_blank">{{artistName}}</a></span>
+            {{#ifAlbum}}
+            <span class="album-name"><a href="{{albumUrl}}" target="_blank">{{albumName}}</a></span>
+            {{/ifAlbum}}
+            <span class="playing-label">
+                Now Playing
+                <svg class="eq-bars" viewBox="0 0 64 32" width="32" height="16" xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true" focusable="false">
+                    <rect class="bar" x="4" y="8" width="6" height="16" rx="2"></rect>
+                    <rect class="bar" x="18" y="8" width="6" height="16" rx="2"></rect>
+                    <rect class="bar" x="32" y="8" width="6" height="16" rx="2"></rect>
+                    <rect class="bar" x="46" y="8" width="6" height="16" rx="2"></rect>
+                </svg>
+            </span>
+        </div>
+    </div>
+    {{else}}
+    <p>Not currently playing anything.</p>
+    {{/ifNowPlaying}}
+</div>
+
+<style>
+    .card {
+        max-width: 400px;
+        margin: 1rem auto;
+        padding: 1.25rem;
+        border-radius: 16px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+
+        background-color: {
+                {
+                themeBg
+            }
+        }
+
+        ;
+
+        color: {
+                {
+                themeText
+            }
+        }
+
+        ;
+        font-family: "Helvetica Neue",
+        Arial,
+        sans-serif;
+    }
+
+    .card a,
+    .card a:visited {
+        color: {
+                {
+                themeUrl
+            }
+        }
+
+        ;
+        text-decoration: none;
+    }
+
+    .card a:hover {
+        text-decoration: underline;
+    }
+
+    .track-card {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    .track-card img {
+        width: 60px;
+        height: 60px;
+        border-radius: 6px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .track-info {
+        overflow: hidden;
+    }
+
+    .track-name a {
+        font-weight: bold;
+    }
+
+    .artist-name,
+    .album-name,
+    .playing-label {
+        display: block;
+        font-size: 0.85rem;
+    }
+
+    .playing-label {
+        color: {
+                {
+                themeUrl
+            }
+        }
+
+        ;
+        margin-top: 0.25rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Equalizer bars */
+    .eq-bars {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .eq-bars .bar {
+        fill: {
+                {
+                themeUrl
+            }
+        }
+
+        ;
+        transform-box: fill-box;
+        transform-origin: 50% 100%;
+        animation: eq-grow 1s infinite ease-in-out;
+        will-change: transform;
+    }
+
+    .eq-bars .bar:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .eq-bars .bar:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .eq-bars .bar:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .eq-bars .bar:nth-child(4) {
+        animation-delay: 0.45s;
+    }
+
+    @keyframes eq-grow {
+
+        0%,
+        100% {
+            transform: scaleY(0.25);
+        }
+
+        50% {
+            transform: scaleY(1);
+        }
+
+    }
+</style>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Last.fm Embed Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-sans m-0 p-8 bg-gray-900 text-gray-200">
+    <h1 class="mb-4 text-2xl font-bold">Last.fm Embed Generator</h1>
+    <div class="flex gap-8 flex-wrap">
+        <form id="generator" class="flex-1 min-w-[280px] grid gap-3 bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
+            <label class="flex flex-col text-sm">
+                Username
+                <input type="text" id="user" required class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+            </label>
+            <label class="flex flex-col text-sm">
+                Endpoint
+                <select id="endpoint" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <option value="currently-playing">Currently Playing</option>
+                    <option value="top-tracks">Top Tracks</option>
+                </select>
+            </label>
+            <label class="flex flex-col text-sm">
+                Theme
+                <select id="theme" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
+            </label>
+            <label class="flex flex-col text-sm">
+                Show Profile
+                <select id="showProfile" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </label>
+
+            <!-- Top Tracks Controls -->
+            <div id="topControls" class="hidden">
+                <label class="flex flex-col text-sm">
+                    Limit
+                    <input type="number" id="limit" value="5" min="1" max="50" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                </label>
+                <label class="flex flex-col text-sm">
+                    Period
+                    <select id="period" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                        <option value="overall">All Time</option>
+                        <option value="7day">Last 7 Days</option>
+                        <option value="1month">Last Month</option>
+                        <option value="3month">Last 3 Months</option>
+                        <option value="6month">Last 6 Months</option>
+                        <option value="12month">Last Year</option>
+                    </select>
+                </label>
+                <label class="flex flex-col text-sm">
+                    Layout
+                    <select id="layout" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                        <option value="vertical">Vertical</option>
+                        <option value="horizontal">Horizontal</option>
+                    </select>
+                </label>
+                <div id="gridControls" class="grid gap-3">
+                    <label class="flex flex-col text-sm">
+                        Rows
+                        <input type="number" id="rows" value="0" min="0" max="10" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    </label>
+                    <label class="flex flex-col text-sm">
+                        Columns
+                        <input type="number" id="columns" value="0" min="0" max="5" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    </label>
+                </div>
+                <div id="horizontalControls" class="hidden">
+                    <label class="flex flex-col text-sm">
+                        Items per Row
+                        <input type="number" id="itemsPerRow" value="5" min="1" max="10" class="bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" id="generateBtn" class="bg-blue-600 text-white rounded border-none px-4 py-2 cursor-pointer hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed">Generate</button>
+
+            <div class="loading-indicator hidden items-center gap-2 text-blue-600 text-sm" id="loadingIndicator">
+                <div class="spinner w-4 h-4 border-2 border-gray-600 border-t-blue-600 rounded-full animate-spin"></div>
+                Loading preview...
+            </div>
+
+            <div class="error-message hidden text-red-400 text-sm p-2 bg-red-900/30 border border-red-600 rounded" id="errorMessage"></div>
+
+            <div class="output mt-4 flex flex-col gap-2">
+                <div class="url-box flex gap-2">
+                    <input type="text" id="urlOutput" class="url-input flex-1 px-2 py-1 font-mono bg-gray-700 text-gray-200 border border-gray-600 rounded" readonly>
+                    <button type="button" id="copyBtn" class="bg-blue-600 text-white rounded border-none px-4 py-2 cursor-pointer hover:bg-blue-700">Copy</button>
+                </div>
+            </div>
+        </form>
+
+        <iframe id="preview" class="flex-1 min-w-[300px] h-[600px] border border-gray-600 rounded bg-gray-900"></iframe>
+    </div>
+
+    <script>
+        const base = window.location.origin;
+
+        let themes = {};
+
+        async function loadThemes() {
+            try {
+                const res = await fetch("/api/themes");
+                const data = await res.json();
+                themes = data;
+                const sel = document.getElementById("theme");
+                Object.keys(data).sort().forEach(k => {
+                    const opt = document.createElement("option");
+                    opt.value = k;
+                    opt.textContent = k;
+                    sel.appendChild(opt);
+                });
+            } catch (err) {
+                console.warn("Failed to load themes:", err);
+                // Fallback themes
+                themes = {
+                    default: { bg: "#ffffff", text: "#000000", url: "#1a73e8", scrobble: "#5f6368" },
+                };
+            }
+        }
+
+        loadThemes();
+
+        const endpointSel = document.getElementById("endpoint");
+        const topControls = document.getElementById("topControls");
+        const layoutSel = document.getElementById("layout");
+        const gridControls = document.getElementById("gridControls");
+        const horizontalControls = document.getElementById("horizontalControls");
+        const loadingIndicator = document.getElementById("loadingIndicator");
+        const errorMessage = document.getElementById("errorMessage");
+        const generateBtn = document.getElementById("generateBtn");
+
+        endpointSel.addEventListener("change", () => {
+            if (endpointSel.value === "top-tracks") {
+                topControls.classList.remove("hidden");
+            } else {
+                topControls.classList.add("hidden");
+            }
+            updateLayoutControls();
+        });
+
+        layoutSel.addEventListener("change", updateLayoutControls);
+
+        function updateLayoutControls() {
+            if (endpointSel.value === "top-tracks") {
+                const isVertical = layoutSel.value === "vertical";
+                if (isVertical) {
+                    gridControls.classList.remove("hidden");
+                    horizontalControls.classList.add("hidden");
+                } else {
+                    gridControls.classList.add("hidden");
+                    horizontalControls.classList.remove("hidden");
+                }
+            } else {
+                gridControls.classList.add("hidden");
+                horizontalControls.classList.add("hidden");
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        function showLoading() {
+            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.classList.add('flex');
+            generateBtn.disabled = true;
+        }
+
+        function hideLoading() {
+            loadingIndicator.classList.add('hidden');
+            loadingIndicator.classList.remove('flex');
+            generateBtn.disabled = false;
+        }
+
+        async function fetchHtmlPreview(endpoint, params) {
+            const apiUrl = `${base}/api/${endpoint}?${params.toString()}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                }
+
+                return await response.text();
+            } catch (error) {
+                throw new Error(`Failed to fetch data: ${error.message}`);
+            }
+        }
+
+        document.getElementById("generator").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const user = document.getElementById("user").value.trim();
+            if (!user) {
+                showError("Username is required");
+                return;
+            }
+
+            const endpoint = endpointSel.value;
+            const themeName = document.getElementById("theme").value;
+            const showProfile = document.getElementById("showProfile").value;
+
+            let params = new URLSearchParams({ user, theme: themeName, showProfile });
+
+            if (endpoint === "top-tracks") {
+                params.set("limit", document.getElementById("limit").value);
+                params.set("period", document.getElementById("period").value);
+                params.set("layout", document.getElementById("layout").value);
+                if (layoutSel.value === "vertical") {
+                    params.set("rows", document.getElementById("rows").value);
+                    params.set("columns", document.getElementById("columns").value);
+                } else {
+                    params.set("itemsPerRow", document.getElementById("itemsPerRow").value);
+                }
+            }
+
+            const url = `${base}/api/${endpoint}?${params.toString()}`;
+            document.getElementById("urlOutput").value = url;
+
+            showLoading();
+            try {
+                const htmlContent = await fetchHtmlPreview(endpoint, params);
+
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const previewUrl = URL.createObjectURL(blob);
+                document.getElementById("preview").src = previewUrl;
+
+                // Clean up previous blob URL
+                if (document.getElementById("preview").previousBlobUrl) {
+                    URL.revokeObjectURL(document.getElementById("preview").previousBlobUrl);
+                }
+                document.getElementById("preview").previousBlobUrl = previewUrl;
+
+            } catch (error) {
+                console.error("Failed to fetch API data:", error);
+                showError(`Failed to load preview: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        document.getElementById("copyBtn").addEventListener("click", () => {
+            const field = document.getElementById("urlOutput");
+            field.select();
+            navigator.clipboard.writeText(field.value).then(() => {
+                const btn = document.getElementById("copyBtn");
+                const originalText = btn.textContent;
+                btn.textContent = "Copied!";
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(() => {
+                showError("Failed to copy to clipboard");
+            });
+        });
+    </script>
+</body>
+
+</html>
