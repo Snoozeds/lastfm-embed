@@ -2,5 +2,11 @@
   "name": "lastfm-embed",
   "module": "index.js",
   "type": "module",
-  "private": true
+  "private": true,
+  "scripts": {
+    "dev": "node src/server.js"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.2"
+  }
 }
