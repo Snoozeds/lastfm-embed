@@ -31,7 +31,7 @@ export async function getUserTopTracks(username, limit = 5, period = "overall") 
                 const trackData = await trackRes.json();
                 
                 const image =
-                    trackData?.track?.album?.image?.find((i) => i.size === "medium")?.["#text"] ||
+                    trackData?.track?.album?.image?.find((i) => i.size === "large")?.["#text"] ||
                     DEFAULT_IMAGE;
                 
                 return { ...t, image };
