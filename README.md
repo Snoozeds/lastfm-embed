@@ -34,6 +34,8 @@ Go to the [main page](https://lastfm-embed.vercel.app/), generate your embed, an
 <iframe src="https://lastfm-embed.vercel.app/api/top-tracks?user=Snoozeds"></iframe>
 ```
 
+I use this on [my own website](https://snoozeds.com), so you can see it being used there at the bottom as well.
+
 ---
 
 ## Installation
