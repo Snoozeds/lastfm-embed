@@ -16,11 +16,11 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 | Parameter        | Endpoint             | Type       | Default       | Description |
 |-----------------|--------------------|-----------|---------------|-------------|
 | `user`          | All                | string    | —             | Last.fm username *(required)* |
-| `theme`         | All                | select    | `default`     | Theme to style the embed |
+| `theme`         | All                | string    | `default`     | Theme to style the embed |
 | `showProfile`   | All                | boolean   | `true`       | Show username in the embed (`true` / `false`) |
 | `limit`         | `/api/top-tracks`       | number    | `5`           | Number of tracks to display (1–50) |
-| `period`        | `/api/top-tracks`       | select    | `overall`     | Time range for top tracks: `overall`, `7day`, `1month`, `3month`, `6month`, `12month` |
-| `layout`        | `/api/top-tracks`       | select    | `vertical`    | Display style: `vertical` or `horizontal` |
+| `period`        | `/api/top-tracks`       | string    | `overall`     | Time range for top tracks: `overall`, `7day`, `1month`, `3month`, `6month`, `12month` |
+| `layout`        | `/api/top-tracks`       | string    | `vertical`    | Display style: `vertical` or `horizontal` |
 | `rows`          | `/api/top-tracks` vertical | number | `0`           | Number of rows in vertical layout (0 = auto) |
 | `columns`       | `/api/top-tracks` vertical | number | `0`           | Number of columns in vertical layout (0 = auto) |
 | `itemsPerRow`   | `/api/top-tracks` horizontal | number | `5`           | Number of tracks per row in horizontal layout |
