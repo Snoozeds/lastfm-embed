@@ -18,12 +18,13 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 | `user`          | All                | string    | —             | Last.fm username *(required)* |
 | `theme`         | All                | string    | `default`     | Theme to style the embed |
 | `showProfile`   | All                | boolean   | `true`       | Show username in the embed (`true` / `false`) |
-| `limit`         | `/api/top-tracks`       | number    | `5`           | Number of tracks to display (1–50) |
-| `period`        | `/api/top-tracks`       | string    | `overall`     | Time range for top tracks: `overall`, `7day`, `1month`, `3month`, `6month`, `12month` |
-| `layout`        | `/api/top-tracks`       | string    | `vertical`    | Display style: `vertical` or `horizontal` |
-| `rows`          | `/api/top-tracks` vertical | number | `0`           | Number of rows in vertical layout (0 = auto) |
-| `columns`       | `/api/top-tracks` vertical | number | `0`           | Number of columns in vertical layout (0 = auto) |
-| `itemsPerRow`   | `/api/top-tracks` horizontal | number | `5`           | Number of tracks per row in horizontal layout |
+| `limit`         | `top-tracks`, `top-albums`, `top-artists`       | number    | `5`           | Number of tracks/albums/artists to display (1–50) |
+| `period`        | `top-tracks`, `top-albums`, `top-artists`        | string    | `overall`     | Time range for top tracks/albums/artists: `overall`, `7day`, `1month`, `3month`, `6month`, `12month` |
+| `layout`        | `top-tracks`, `top-albums`, `top-artists`        | string    | `vertical`    | Display style: `vertical` or `horizontal` |
+| `rows`          | `top-tracks`, `top-albums`, `top-artists`  vertical | number | `0`           | Number of rows in vertical layout (0 = auto) |
+| `columns`       | `top-tracks`, `top-albums`, `top-artists`  vertical | number | `0`           | Number of columns in vertical layout (0 = auto) |
+| `itemsPerRow`   | `top-tracks`, `top-albums`, `top-artists`  horizontal | number | `5`           | Number of tracks per row in horizontal layout |
+| `usePlaceholderImage` | `top-artists` | boolean | `false` | When `true`, shows Last.fm's placeholder images for artists (as the API only provides that). When `false`, displays the ranking number instead of an image.
 
 ---
 
@@ -50,8 +51,14 @@ PORT=3000
 RATE_LIMIT_WINDOW_MS=60,000 # 1 minute
 RATE_LIMIT_MAX_REQUESTS=25 # max of 25 requests per minute
 
+MAX_ARTISTS=50
+MIN_ARTISTS=1
+
 MAX_TRACKS=50
 MIN_TRACKS=1
+
+MAX_ALBUMS=50
+MIN_ALBUMS=1
 
 MAX_ROWS=10
 MIN_ROWS=1
@@ -86,6 +93,7 @@ myTheme: { bg: "#ffff", text: "#000000", url: "#0000ffff", scrobble: "#ffff" },
 
 ## Notes
 
+- The top artists endpoint does not use artist images, and instead uses the default artist image as last.fm's api only provides that.
 - All tracks in the preview can use last.fm's **default image** (`/public/images/default.jpg`) if a real album cover is not available.  
 
 ---

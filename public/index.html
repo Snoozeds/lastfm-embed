@@ -20,6 +20,8 @@
                 <select id="endpoint" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                     <option value="currently-playing">Currently Playing</option>
                     <option value="top-tracks">Top Tracks</option>
+                    <option value="top-albums">Top Albums</option>
+                    <option value="top-artists">Top Artists</option>
                 </select>
             </label>
             <label class="flex flex-col text-sm">
@@ -34,7 +36,7 @@
                 </select>
             </label>
 
-            <!-- Top Tracks Controls -->
+            <!-- Top Tracks/Albums/Artists Controls -->
             <div id="topControls" class="hidden">
                 <label class="flex flex-col text-sm">
                     Limit
@@ -74,6 +76,17 @@
                         <input type="number" id="itemsPerRow" value="5" min="1" max="10" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                     </label>
                 </div>
+            </div>
+
+            <!-- Top Artists specific controls -->
+            <div id="topArtistsControls" class="hidden">
+                <label class="flex flex-col text-sm">
+                    Use Placeholder Image
+                    <select id="usePlaceholderImage" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                        <option value="false" selected>No (Show ranking numbers)</option>
+                        <option value="true">Yes (Show Last.fm placeholder images)</option>
+                    </select>
+                </label>
             </div>
 
             <button type="submit" id="generateBtn" class="bg-blue-600 text-white rounded border-none px-4 py-2 cursor-pointer hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed">Generate</button>
@@ -127,6 +140,7 @@
 
         const endpointSel = document.getElementById("endpoint");
         const topControls = document.getElementById("topControls");
+        const topArtistsControls = document.getElementById("topArtistsControls");
         const layoutSel = document.getElementById("layout");
         const gridControls = document.getElementById("gridControls");
         const horizontalControls = document.getElementById("horizontalControls");
@@ -135,18 +149,28 @@
         const generateBtn = document.getElementById("generateBtn");
 
         endpointSel.addEventListener("change", () => {
-            if (endpointSel.value === "top-tracks") {
+            const endpoint = endpointSel.value;
+            if (endpoint === "top-tracks" || endpoint === "top-albums" || endpoint === "top-artists") {
                 topControls.classList.remove("hidden");
             } else {
                 topControls.classList.add("hidden");
             }
+            
+            // Show top-artists specific controls
+            if (endpoint === "top-artists") {
+                topArtistsControls.classList.remove("hidden");
+            } else {
+                topArtistsControls.classList.add("hidden");
+            }
+            
             updateLayoutControls();
         });
 
         layoutSel.addEventListener("change", updateLayoutControls);
 
         function updateLayoutControls() {
-            if (endpointSel.value === "top-tracks") {
+            const endpoint = endpointSel.value;
+            if (endpoint === "top-tracks" || endpoint === "top-albums" || endpoint === "top-artists") {
                 const isVertical = layoutSel.value === "vertical";
                 if (isVertical) {
                     gridControls.classList.remove("hidden");
@@ -213,7 +237,7 @@
 
             let params = new URLSearchParams({ user, theme: themeName, showProfile });
 
-            if (endpoint === "top-tracks") {
+            if (endpoint === "top-tracks" || endpoint === "top-albums" || endpoint === "top-artists") {
                 params.set("limit", document.getElementById("limit").value);
                 params.set("period", document.getElementById("period").value);
                 params.set("layout", document.getElementById("layout").value);
@@ -223,6 +247,10 @@
                 } else {
                     params.set("itemsPerRow", document.getElementById("itemsPerRow").value);
                 }
+            }
+
+            if (endpoint === "top-artists") {
+                params.set("usePlaceholderImage", document.getElementById("usePlaceholderImage").value);
             }
 
             const url = `${base}/api/${endpoint}?${params.toString()}`;
