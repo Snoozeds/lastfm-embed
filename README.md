@@ -6,8 +6,18 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 
 ## Demo Images
 
-![Currently Playing](/wiki/currently-playing.png)
-![Top Tracks](/wiki/top-tracks.png)
+| Top Artists | Top Tracks | Top Albums |
+|-------------|------------|------------|
+| ![](/wiki/top-artists.png) | ![](/wiki/top-tracks.png) | ![](/wiki/top-albums.png) |
+
+<div align="center">
+
+| Currently Playing |
+|-------------------|
+| ![](/wiki/currently-playing.png) |
+
+</div>
+
 
 ---
 
