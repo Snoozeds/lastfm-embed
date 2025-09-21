@@ -93,7 +93,6 @@ myTheme: { bg: "#ffff", text: "#000000", url: "#0000ffff", scrobble: "#ffff" },
 
 ## Notes
 
-- The top artists endpoint does not use artist images, and instead uses the default artist image as last.fm's api only provides that.
 - All tracks in the preview can use last.fm's **default image** (`/public/images/default.jpg`) if a real album cover is not available.  
 
 ---
