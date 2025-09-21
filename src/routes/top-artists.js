@@ -40,6 +40,9 @@ export default async function topArtistsRoute(req) {
         const username = url.searchParams.get("user");
         const themeName = url.searchParams.get("theme") || "default";
         const limit = parseInt(url.searchParams.get("limit") || "5");
+        const showTitle = url.searchParams.get("showTitle")
+            ? url.searchParams.get("showTitle") === "true"
+            : true;
         const showProfile = url.searchParams.has("showProfile")
             ? url.searchParams.get("showProfile") === "true"
             : true;
@@ -106,6 +109,14 @@ export default async function topArtistsRoute(req) {
 
         const periodLabel = periodLabels[period] || "All Time";
 
+        const titleHtml = showTitle 
+            ? `<h3>
+                ${profileHtml}
+                <span class="h3-suffix">Top Artists</span>&nbsp;
+                <span class="period-label">(${escapeHtml(periodLabel)})</span>
+               </h3>`
+            : "";
+
         // Read template
         const templatePath = path.join(__dirname, "../templates/top-artists.html");
         let template = await readFile(templatePath, "utf-8");
@@ -116,6 +127,7 @@ export default async function topArtistsRoute(req) {
             .replace("{{text}}", theme.text)
             .replace("{{url}}", theme.url)
             .replace("{{scrobble}}", theme.scrobble)
+            .replace("{{title}}", titleHtml)
             .replace("{{profile}}", profileHtml)
             .replace("{{period}}", escapeHtml(periodLabel))
             .replace("{{layout}}", escapeHtml(layout))

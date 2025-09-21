@@ -1,10 +1,12 @@
 <div class="card">
+    {{#ifShowTitle}}
     <h3>
         {{#ifShowProfile}}
         <a class="profile-link" href="https://www.last.fm/user/{{username}}" target="_blank">{{username}}</a>'s
         {{/ifShowProfile}}
         Currently Playing
     </h3>
+    {{/ifShowTitle}}
 
     {{#ifNowPlaying}}
     <div class="track-card">

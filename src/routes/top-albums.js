@@ -40,6 +40,9 @@ export default async function topAlbumsRoute(req) {
         const username = url.searchParams.get("user");
         const themeName = url.searchParams.get("theme") || "default";
         const limit = parseInt(url.searchParams.get("limit") || "5");
+        const showTitle = url.searchParams.get("showTitle")
+            ? url.searchParams.get("showTitle") === "true"
+            : true;
         const showProfile = url.searchParams.has("showProfile")
             ? url.searchParams.get("showProfile") === "true"
             : true;
@@ -99,6 +102,14 @@ export default async function topAlbumsRoute(req) {
 
         const periodLabel = periodLabels[period] || "All Time";
 
+        const titleHtml = showTitle 
+            ? `<h3>
+                ${profileHtml}
+                <span class="h3-suffix">Top Albums</span>&nbsp;
+                <span class="period-label">(${escapeHtml(periodLabel)})</span>
+               </h3>`
+            : "";
+
         // Read template
         const templatePath = path.join(__dirname, "../templates/top-albums.html");
         let template = await readFile(templatePath, "utf-8");
@@ -111,6 +122,7 @@ export default async function topAlbumsRoute(req) {
             .replace("{{scrobble}}", theme.scrobble)
             .replace("{{profile}}", profileHtml)
             .replace("{{period}}", escapeHtml(periodLabel))
+            .replace("{{title}}", titleHtml)
             .replace("{{layout}}", escapeHtml(layout))
             .replace("{{itemsPerRow}}", escapeHtml(itemsPerRow.toString()))
             .replace("{{verticalGridStyle}}", verticalGridStyle)

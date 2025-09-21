@@ -27,6 +27,7 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 |-----------------|--------------------|-----------|---------------|-------------|
 | `user`          | All                | string    | —             | Last.fm username *(required)* |
 | `theme`         | All                | string    | `default`     | Theme to style the embed |
+| `showTitle`     | All                | boolean   | `true`        | Whether to show the title of the embed (e.g "Top Tracks") or not.
 | `showProfile`   | All                | boolean   | `true`       | Show username in the embed (`true` / `false`) |
 | `limit`         | `top-tracks`, `top-albums`, `top-artists`       | number    | `5`           | Number of tracks/albums/artists to display (1–50) |
 | `period`        | `top-tracks`, `top-albums`, `top-artists`        | string    | `overall`     | Time range for top tracks/albums/artists: `overall`, `7day`, `1month`, `3month`, `6month`, `12month` |

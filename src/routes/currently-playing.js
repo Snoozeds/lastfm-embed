@@ -37,6 +37,10 @@ function renderTemplate(template, data) {
         /{{#ifShowProfile}}([\s\S]*?){{\/ifShowProfile}}/g,
         (_, block) => (data.showProfile ? block : "")
     );
+    template = template.replace(
+        /{{#ifShowTitle}}([\s\S]*?){{\/ifShowTitle}}/g,
+        (_, block) => (data.showTitle ? block : "")
+    );
     // Replace variables
     return template.replace(/\{\s*\{\s*([a-zA-Z0-9_]+)\s*\}\s*\}/g, (_, key) => {
         const val = data[key];
@@ -56,6 +60,9 @@ export default async function currentlyPlayingRoute(req) {
         }
 
         const username = url.searchParams.get("user");
+        const showTitle = url.searchParams.get("showTitle")
+            ? url.searchParams.get("showTitle") === "true"
+            : true;
         const showProfile = url.searchParams.has("showProfile")
             ? url.searchParams.get("showProfile") === "true"
             : true;
@@ -78,6 +85,7 @@ export default async function currentlyPlayingRoute(req) {
         const renderData = {
             username,
             showProfile,
+            showTitle,
             themeBg: theme.bg,
             themeText: theme.text,
             themeUrl: theme.url,
