@@ -26,7 +26,23 @@ const server = http.createServer((req, res) => {
   if (pathname === "/api/top-albums") return handlerTopAlbums(req, res);
 
   // Static files
-  let filePath = path.join(publicDir, pathname === "/" ? "index.html" : pathname);
+  const requestedPath = pathname === "/" ? "index.html" : pathname;
+  const unsafePath = path.join(publicDir, requestedPath);
+
+  let filePath;
+  try {
+    filePath = fs.realpathSync(path.resolve(unsafePath));
+    if (!filePath.startsWith(publicDir)) {
+      res.statusCode = 403;
+      res.end("Forbidden");
+      return;
+    }
+  } catch {
+    res.statusCode = 404;
+    res.end("Not Found");
+    return;
+  }
+
   fs.readFile(filePath, (err, content) => {
     if (err) {
       res.statusCode = 404;
