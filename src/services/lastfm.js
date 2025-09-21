@@ -45,3 +45,44 @@ export async function getUserTopTracks(username, limit = 5, period = "overall") 
     setCache(cacheKey, data, 300);
     return data;
 }
+
+export async function getCurrentlyPlaying(username) {
+    const cacheKey = `currently-playing_${username}`;
+    const cached = getCache(cacheKey);
+    if (cached) return cached;
+
+    const recentTracksUrl = `${BASE_URL}?method=user.getrecenttracks&user=${username}&api_key=${API_KEY}&format=json&limit=1`;
+    const res = await fetch(recentTracksUrl);
+    if (!res.ok) throw new Error("Failed to fetch recent tracks");
+
+    const data = await res.json();
+    const track = data.recenttracks?.track?.[0];
+    
+    if (!track) {
+        const result = { nowPlaying: false, track: null };
+        setCache(cacheKey, result, 30);
+        return result;
+    }
+
+    const nowPlaying = !!(track["@attr"]?.nowplaying === "true");
+    
+    const result = {
+        nowPlaying,
+        track: {
+            name: track.name || "",
+            url: track.url || "#",
+            artist: {
+                name: track.artist?.["#text"] || track.artist?.name || "",
+                url: track.artist?.url || ""
+            },
+            album: {
+                name: track.album?.["#text"] || "",
+                url: track.album?.url || ""
+            },
+            image: track.image?.[1]?.["#text"] || DEFAULT_IMAGE
+        }
+    };
+
+    setCache(cacheKey, result, 30);
+    return result;
+}

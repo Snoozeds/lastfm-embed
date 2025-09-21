@@ -1,5 +1,6 @@
 import { getCache, setCache } from "../utils/cache.js";
 import { themes } from "../lib/themes.js";
+import { getCurrentlyPlaying } from "../services/lastfm.js";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -7,9 +8,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DEFAULT_IMAGE = "/images/default.jpg";
-const API_KEY = process.env.LASTFM_API_KEY;
-const BASE_URL = "http://ws.audioscrobbler.com/2.0/";
 const TEMPLATE_PATH = path.join(__dirname, "../templates/currently-playing.html");
 
 function escapeHtml(str) {
@@ -74,13 +72,7 @@ export default async function currentlyPlayingRoute(req) {
             return { html: cached, status: 200 };
         }
 
-        const recentTracksUrl = `${BASE_URL}?method=user.getrecenttracks&user=${username}&api_key=${API_KEY}&format=json&limit=1`;
-        const res = await fetch(recentTracksUrl);
-        if (!res.ok) throw new Error("Failed to fetch recent tracks");
-
-        const data = await res.json();
-        const track = data.recenttracks?.track?.[0];
-        const nowPlaying = !!(track && track["@attr"]?.nowplaying === "true");
+        const currentlyPlayingData = await getCurrentlyPlaying(username);
 
         const template = await fs.readFile(TEMPLATE_PATH, "utf-8");
         const renderData = {
@@ -89,14 +81,14 @@ export default async function currentlyPlayingRoute(req) {
             themeBg: theme.bg,
             themeText: theme.text,
             themeUrl: theme.url,
-            nowPlaying,
-            trackImage: (track?.image?.[1]?.["#text"] || DEFAULT_IMAGE),
-            trackName: track?.name || "",
-            trackUrl: track?.url || "#",
-            artistName: track?.artist?.["#text"] || track?.artist?.name || "",
-            artistUrl: track?.artist?.url || "",
-            albumName: track?.album?.["#text"] || "",
-            albumUrl: track?.album?.url || "",
+            nowPlaying: currentlyPlayingData.nowPlaying,
+            trackImage: currentlyPlayingData.track?.image || "/images/default.jpg",
+            trackName: currentlyPlayingData.track?.name || "",
+            trackUrl: currentlyPlayingData.track?.url || "#",
+            artistName: currentlyPlayingData.track?.artist?.name || "",
+            artistUrl: currentlyPlayingData.track?.artist?.url || "",
+            albumName: currentlyPlayingData.track?.album?.name || "",
+            albumUrl: currentlyPlayingData.track?.album?.url || "",
         };
 
         const html = renderTemplate(template, renderData);
