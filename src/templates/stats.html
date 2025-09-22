@@ -36,13 +36,44 @@
 
             <div class="stat-divider"></div>
 
-            <div class="stat-item">
-                <div class="stat-number">{{currentStreak}}</div>
-                <div class="stat-label">Current Streak</div>
+            <div class="stat-item" id="streak-container">
+                <div class="loading-spinner"></div>
+                <div class="stat-label">Loading streak...</div>
             </div>
         </div>
         {{/ifHasStats}}
     </div>
+
+    {{#ifHasStats}}
+    <script>
+        // Load streak data asynchronously
+        const username = "{{username}}";
+        const streakUrl = `${window.location.origin}/api/stats?user=${encodeURIComponent(username)}&streakOnly=true`;
+
+        fetch(streakUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const container = document.getElementById('streak-container');
+                container.innerHTML = `
+        <div class="stat-number">${data.streak}</div>
+        <div class="stat-label">Current Streak</div>
+      `;
+            })
+            .catch(error => {
+                console.error('Failed to load streak:', error);
+                const container = document.getElementById('streak-container');
+                container.innerHTML = `
+        <div class="stat-number">-</div>
+        <div class="stat-label">Streak Error</div>
+      `;
+            });
+    </script>
+    {{/ifHasStats}}
 
     <style>
         .stats-card {
@@ -125,6 +156,11 @@
             flex: 1;
             text-align: center;
             padding: 8px 12px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .stat-number {
@@ -169,6 +205,35 @@
             ;
             opacity: 0.2;
             margin: 0 8px;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+
+            border: 2px solid {
+                    {
+                    themeUrl
+                }
+            }
+
+            ;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 4px;
+            opacity: 0.6;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive adjustments */

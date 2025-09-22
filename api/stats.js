@@ -20,6 +20,14 @@ export default async function handler(req, res) {
         return;
     }
 
+    // Handle JSON response (for streak-only requests, used for when we display "Loading streak...")
+    if (result.json) {
+        res.setHeader("Content-Type", "application/json");
+        res.statusCode = result.status || 200;
+        res.end(JSON.stringify(result.json));
+        return;
+    }
+
     // Return HTML content
     res.setHeader("Content-Type", "text/html");
     res.statusCode = result.status || 200;

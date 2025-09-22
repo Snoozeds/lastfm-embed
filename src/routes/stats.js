@@ -71,6 +71,35 @@ function formatStreak(days) {
     if (years === 1) {
         return "1 year+";
     }
+
+    return `${years} years+`;
+}
+
+// Basic stats without streak (will calculate streak later)
+async function getBasicUserStats(username) {
+    const BASE_URL = "http://ws.audioscrobbler.com/2.0/";
+    const API_KEY = process.env.LASTFM_API_KEY;
+
+    const infoUrl = `${BASE_URL}?method=user.getinfo&user=${encodeURIComponent(
+        username
+    )}&api_key=${API_KEY}&format=json`;
+
+    const infoRes = await fetch(infoUrl);
+    if (!infoRes.ok) throw new Error("Failed to fetch Last.fm user info");
+    const infoData = await infoRes.json();
+
+    const totalScrobbles = parseInt(infoData.user.playcount, 10);
+    const registeredUnix = parseInt(infoData.user.registered.unixtime, 10) * 1000;
+    const daysSince = Math.max(
+        1,
+        Math.floor((Date.now() - registeredUnix) / (1000 * 60 * 60 * 24))
+    );
+    const avgPerDay = (totalScrobbles / daysSince).toFixed(1);
+
+    return {
+        totalScrobbles: totalScrobbles.toLocaleString(),
+        avgPerDay,
+    };
 }
 
 export default async function statsRoute(req) {
@@ -92,6 +121,7 @@ export default async function statsRoute(req) {
             ? url.searchParams.get("showProfile") === "true"
             : true;
         const themeName = url.searchParams.get("theme") || "default";
+        const streakOnly = url.searchParams.get("streakOnly") === "true";
 
         const useCommas = url.searchParams.has("numberFormat")
             ? (url.searchParams.get("numberFormat") === "commas" || url.searchParams.get("numberFormat") === "comma")
@@ -103,17 +133,33 @@ export default async function statsRoute(req) {
             return { error: "Missing user parameter", status: 400 };
         }
 
+        if (streakOnly) {
+            const streakCacheKey = `streak_${username}`;
+            let cached = getCache(streakCacheKey);
+
+            if (!cached) {
+                // Calculate streak if not cached
+                const stats = await getUserStats(username);
+                cached = { streak: stats.currentStreak };
+                setCache(streakCacheKey, cached, 1800); // 30 mins cache for streak
+            }
+
+            const formattedStreak = formatStreak(cached.streak);
+            return {
+                json: { streak: formattedStreak },
+                status: 200
+            };
+        }
+
         const cacheKey = `stats_${username}_${themeName}_${showTitle}_${showProfile}_${useCommas}`;
         const cached = getCache(cacheKey);
         if (cached) {
             return { html: cached, status: 200 };
         }
 
-        const stats = await getUserStats(username);
+        const stats = await getBasicUserStats(username);
         const noStats = !stats.totalScrobbles || stats.totalScrobbles === 0;
         const template = await fs.readFile(TEMPLATE_PATH, "utf-8");
-
-        const formattedStreak = formatStreak(stats.currentStreak);
 
         const totalScrobblesNum = parseInt(stats.totalScrobbles.replace(/[,\.]/g, ''), 10);
         const formattedTotalScrobbles = noStats ? "0" : formatNumber(totalScrobblesNum, useCommas);
@@ -131,12 +177,12 @@ export default async function statsRoute(req) {
             themeScrobble: theme.scrobble,
             totalScrobbles: formattedTotalScrobbles,
             avgPerDay: formattedAvgPerDay,
-            currentStreak: noStats ? "0" : formattedStreak,
+            currentStreak: "0", // Will be loaded via js in the stats.html template
             noStats,
         };
 
         const html = renderTemplate(template, renderData);
-        setCache(cacheKey, html, 30); // cache 30 seconds
+        setCache(cacheKey, html, 60); // Cache for 1 minute
         return { html, status: 200 };
     } catch (err) {
         return {
