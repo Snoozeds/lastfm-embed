@@ -10,6 +10,7 @@ import handlerThemes from "../api/themes.js";
 import handlerTopArtists from "../api/top-artists.js";
 import handlerTopTracks from "../api/top-tracks.js";
 import handlerTopAlbums from "../api/top-albums.js";
+import handlerStats from "../api/stats.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +25,7 @@ const server = http.createServer((req, res) => {
   if (pathname === "/api/top-artists") return handlerTopArtists(req, res);
   if (pathname === "/api/top-tracks") return handlerTopTracks(req, res);
   if (pathname === "/api/top-albums") return handlerTopAlbums(req, res);
+  if (pathname === "/api/stats") return handlerStats(req, res);
 
   // Static files
   const requestedPath = pathname === "/" ? "index.html" : pathname;

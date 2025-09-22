@@ -25,6 +25,7 @@
                     <option value="top-tracks">Top Tracks</option>
                     <option value="top-albums">Top Albums</option>
                     <option value="top-artists">Top Artists</option>
+                    <option value="stats">Stats</option>
                 </select>
             </label>
             <label class="flex flex-col text-sm">
@@ -48,6 +49,18 @@
                     <option value="false">No</option>
                 </select>
             </label>
+
+            <!-- Stats specific controls -->
+            <div id="statsControls" class="hidden">
+                <label class="flex flex-col text-sm">
+                    Number Format
+                    <select id="numberFormat"
+                        class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                        <option value="commas" selected>Commas (123,456)</option>
+                        <option value="periods">Periods (123.456)</option>
+                    </select>
+                </label>
+            </div>
 
             <!-- Top Tracks/Albums/Artists Controls -->
             <div id="topControls" class="hidden">
@@ -165,6 +178,7 @@
 
         const endpointSel = document.getElementById("endpoint");
         const topControls = document.getElementById("topControls");
+        const statsControls = document.getElementById("statsControls");
         const topArtistsControls = document.getElementById("topArtistsControls");
         const layoutSel = document.getElementById("layout");
         const gridControls = document.getElementById("gridControls");
@@ -177,8 +191,13 @@
             const endpoint = endpointSel.value;
             if (endpoint === "top-tracks" || endpoint === "top-albums" || endpoint === "top-artists") {
                 topControls.classList.remove("hidden");
+                statsControls.classList.add("hidden");
+            } else if (endpoint === "stats") {
+                topControls.classList.add("hidden");
+                statsControls.classList.remove("hidden");
             } else {
                 topControls.classList.add("hidden");
+                statsControls.classList.add("hidden");
             }
 
             // Show top-artists specific controls
@@ -277,6 +296,10 @@
 
             if (endpoint === "top-artists") {
                 params.set("usePlaceholderImage", document.getElementById("usePlaceholderImage").value);
+            }
+
+            if (endpoint === "stats") {
+                params.set("numberFormat", document.getElementById("numberFormat").value);
             }
 
             const url = `${base}/api/${endpoint}?${params.toString()}`;
