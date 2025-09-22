@@ -104,7 +104,7 @@ myTheme: { bg: "#ffff", text: "#000000", url: "#0000ffff", scrobble: "#ffff" },
 ## Notes
 
 - All tracks in the preview can use last.fm's **default image** (`/public/images/default.jpg`) if a real album cover is not available.
-- The `/stats` endpoint may take a long time to load, because of this the stats themselves are cached for 30 mins. The 'streak' also caps out at 1 year, and will display '1 year+' if reached, because I don't want to completely overwhelm last.fm's api, or my own.  
+- The `/stats` endpoint's 'streak' caps out at 1 year, and will display '1 year+' if reached, because I don't want to completely overwhelm last.fm's api, or my own.  
 
 ---
 
