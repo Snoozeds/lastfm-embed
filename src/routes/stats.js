@@ -24,15 +24,14 @@ function escapeHtml(str) {
 function formatNumber(num, useCommas = true) {
     if (!num || isNaN(num)) return "0";
 
-    const numStr = num.toString();
-    if (useCommas) {
-        // Use commas (123,456)
-        return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    } else {
-        // Use periods (123.456)
-        return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+    const [intPart, decPart] = num.toString().split(".");
+    const sep = useCommas ? "," : ".";
+    const decimalSep = useCommas ? "." : ",";
+
+    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+    return decPart ? `${formattedInt}${decimalSep}${decPart}` : formattedInt;
 }
+
 
 function renderTemplate(template, data) {
     template = template.replace(
