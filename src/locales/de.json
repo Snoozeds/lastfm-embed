@@ -7,9 +7,9 @@
     "not_playing": "Momentan wird nichts abgespielt."
   },
   "top": {
-    "top_artists": "{{username}}'s&nbsp;Top Künstler",
-    "top_tracks": "{{username}}'s&nbsp;Top Titel",
-    "top_albums": "{{username}}'s&nbsp;Top Alben"
+    "top_artists": "{{username}}'s Top Künstler",
+    "top_tracks": "{{username}}'s Top Titel",
+    "top_albums": "{{username}}'s Top Alben"
   },
   "periods": {
     "7day": "7 Tage",
