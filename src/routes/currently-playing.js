@@ -1,6 +1,7 @@
 import { getCache, setCache } from "../utils/cache.js";
 import { themes } from "../lib/themes.js";
 import { getCurrentlyPlaying } from "../services/lastfm.js";
+import { t } from "../utils/i18n.js";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -34,10 +35,6 @@ function renderTemplate(template, data) {
         (_, block) => (data.albumName ? block : "")
     );
     template = template.replace(
-        /{{#ifShowProfile}}([\s\S]*?){{\/ifShowProfile}}/g,
-        (_, block) => (data.showProfile ? block : "")
-    );
-    template = template.replace(
         /{{#ifShowTitle}}([\s\S]*?){{\/ifShowTitle}}/g,
         (_, block) => (data.showTitle ? block : "")
     );
@@ -63,17 +60,15 @@ export default async function currentlyPlayingRoute(req) {
         const showTitle = url.searchParams.get("showTitle")
             ? url.searchParams.get("showTitle") === "true"
             : true;
-        const showProfile = url.searchParams.has("showProfile")
-            ? url.searchParams.get("showProfile") === "true"
-            : true;
         const themeName = url.searchParams.get("theme") || "default";
         const theme = themes[themeName] || themes.default;
+        const locale = url.searchParams.get("lang") || "en";
 
         if (!username) {
             return { error: "Missing user parameter", status: 400 };
         }
 
-        const cacheKey = `currently-playing_${username}_${themeName}`;
+        const cacheKey = `currently-playing_${username}_${themeName}_${locale}`;
         const cached = getCache(cacheKey);
         if (cached) {
             return { html: cached, status: 200 };
@@ -84,7 +79,7 @@ export default async function currentlyPlayingRoute(req) {
         const template = await fs.readFile(TEMPLATE_PATH, "utf-8");
         const renderData = {
             username,
-            showProfile,
+            userUrl: `https://www.last.fm/user/${encodeURIComponent(username)}`,
             showTitle,
             themeBg: theme.bg,
             themeText: theme.text,
@@ -97,6 +92,11 @@ export default async function currentlyPlayingRoute(req) {
             artistUrl: currentlyPlayingData.track?.artist?.url || "",
             albumName: currentlyPlayingData.track?.album?.name || "",
             albumUrl: currentlyPlayingData.track?.album?.url || "",
+
+            // Translations
+            nowPlayingLabel: t("playing.now_playing", locale),
+            currentlyPlayingLabel: t("playing.currently_playing", locale),
+            notPlayingLabel: t("playing.not_playing", locale)
         };
 
         const html = renderTemplate(template, renderData);

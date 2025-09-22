@@ -1,10 +1,8 @@
+<meta charset="UTF-8">
 <div class="card">
     {{#ifShowTitle}}
     <h3>
-        {{#ifShowProfile}}
-        <a class="profile-link" href="https://www.last.fm/user/{{username}}" target="_blank">{{username}}</a>'s
-        {{/ifShowProfile}}
-        Currently Playing
+        <a class="profile-link" href="{{userUrl}}" target="_blank">{{username}}</a>{{currentlyPlayingLabel}}
     </h3>
     {{/ifShowTitle}}
 
@@ -18,7 +16,7 @@
             <span class="album-name"><a href="{{albumUrl}}" target="_blank">{{albumName}}</a></span>
             {{/ifAlbum}}
             <span class="playing-label">
-                Now Playing
+                {{nowPlayingLabel}}
                 <svg class="eq-bars" viewBox="0 0 64 32" width="32" height="16" xmlns="http://www.w3.org/2000/svg"
                     aria-hidden="true" focusable="false">
                     <rect class="bar" x="4" y="8" width="6" height="16" rx="2"></rect>
@@ -30,7 +28,7 @@
         </div>
     </div>
     {{else}}
-    <p>Not currently playing anything.</p>
+    <p>{{notPlayingLabel}}</p>
     {{/ifNowPlaying}}
 </div>
 

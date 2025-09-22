@@ -1,6 +1,7 @@
 import { getCache, setCache } from "../utils/cache.js";
 import { themes } from "../lib/themes.js";
 import { getUserStats } from "../services/lastfm.js";
+import { t } from "../utils/i18n.js";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -37,10 +38,6 @@ function renderTemplate(template, data) {
     template = template.replace(
         /{{#ifShowTitle}}([\s\S]*?){{\/ifShowTitle}}/g,
         (_, block) => (data.showTitle ? block : "")
-    );
-    template = template.replace(
-        /{{#ifShowProfile}}([\s\S]*?){{\/ifShowProfile}}/g,
-        (_, block) => (data.showProfile ? block : "")
     );
     template = template.replace(
         /{{#ifNoStats}}([\s\S]*?){{\/ifNoStats}}/g,
@@ -117,9 +114,6 @@ export default async function statsRoute(req) {
         const showTitle = url.searchParams.has("showTitle")
             ? url.searchParams.get("showTitle") === "true"
             : true;
-        const showProfile = url.searchParams.has("showProfile")
-            ? url.searchParams.get("showProfile") === "true"
-            : true;
         const themeName = url.searchParams.get("theme") || "default";
         const streakOnly = url.searchParams.get("streakOnly") === "true";
 
@@ -128,6 +122,7 @@ export default async function statsRoute(req) {
             : true;
 
         const theme = themes[themeName] || themes.default;
+        const locale = url.searchParams.get("lang") || "en";
 
         if (!username) {
             return { error: "Missing user parameter", status: 400 };
@@ -151,7 +146,7 @@ export default async function statsRoute(req) {
             };
         }
 
-        const cacheKey = `stats_${username}_${themeName}_${showTitle}_${showProfile}_${useCommas}`;
+        const cacheKey = `stats_${username}_${themeName}_${showTitle}_${useCommas}`;
         const cached = getCache(cacheKey);
         if (cached) {
             return { html: cached, status: 200 };
@@ -170,7 +165,6 @@ export default async function statsRoute(req) {
         const renderData = {
             username,
             showTitle,
-            showProfile,
             themeBg: theme.bg,
             themeText: theme.text,
             themeUrl: theme.url,
@@ -179,6 +173,13 @@ export default async function statsRoute(req) {
             avgPerDay: formattedAvgPerDay,
             currentStreak: "0", // Will be loaded via js in the stats.html template
             noStats,
+
+            // Translations
+            statsLabel: t("stats.stats", locale),
+            totalScrobblesLabel: t("stats.total_scrobbles", locale),
+            averageLabel: t("stats.average_day", locale),
+            loadingStreakLabel: t("stats.loading_streak", locale),
+            currentStreakLabel: t("stats.current_streak", locale),
         };
 
         const html = renderTemplate(template, renderData);

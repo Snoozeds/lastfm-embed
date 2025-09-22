@@ -1,5 +1,6 @@
 import { getUserTopTracks } from "../services/lastfm.js";
 import { themes } from "../lib/themes.js";
+import { t } from "../utils/i18n.js";
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -43,11 +44,9 @@ export default async function topTracksRoute(req) {
         const showTitle = url.searchParams.get("showTitle")
             ? url.searchParams.get("showTitle") === "true"
             : true;
-        const showProfile = url.searchParams.has("showProfile")
-            ? url.searchParams.get("showProfile") === "true"
-            : true;
         const layout = url.searchParams.get("layout") || "vertical";
         const period = url.searchParams.get("period") || "overall";
+        const locale = url.searchParams.get("lang") || "en";
 
         if (!username) {
             return { error: "Missing user parameter", status: 400 };
@@ -71,43 +70,32 @@ export default async function topTracksRoute(req) {
         if (rows > 0) verticalGridStyle += `grid-auto-rows: calc(100% / ${rows});`;
 
         // Profile HTML
-        const profileHtml = showProfile
-            ? `<a class="profile-link" href="https://www.last.fm/user/${escapeHtml(username)}" target="_blank">${escapeHtml(username)}</a>'s `
-            : "";
+        const profileHtml = `<a class="profile-link" href="https://www.last.fm/user/${escapeHtml(username)}" target="_blank">${escapeHtml(username)}</a>`
 
         // Track list HTML
         const tracksHtml = stats.toptracks.track
-            .map(
-                (t) => `
+            .map(track => {
+                const scrobbleLabel = track.playcount === "1" ? t("scrobble", locale) : t("scrobbles", locale);
+
+                return `
       <li class="${escapeHtml(layout)}">
-        <img src="${escapeHtml(t.image)}" alt="${escapeHtml(t.name)} cover" />
+        <img src="${escapeHtml(track.image)}" alt="${escapeHtml(track.name)} cover" />
         <div class="track-info">
-          <span class="track-name" title="${escapeHtml(t.name)}">${t.url ? `<a href="${escapeHtml(t.url)}" target="_blank">${escapeHtml(t.name)}</a>` : escapeHtml(t.name)}</span>
-          <span class="artist-name" title="${escapeHtml(t.artist.name)}">${t.artist.url ? `<a href="${escapeHtml(t.artist.url)}" target="_blank">${escapeHtml(t.artist.name)}</a>` : escapeHtml(t.artist.name)}</span>
-          <span class="track-stats">${escapeHtml(t.playcount)} scrobble${t.playcount !== "1" ? "s" : ""}</span>
+          <span class="track-name" title="${escapeHtml(track.name)}">${track.url ? `<a href="${escapeHtml(track.url)}" target="_blank">${escapeHtml(track.name)}</a>` : escapeHtml(track.name)}</span>
+          <span class="artist-name" title="${escapeHtml(track.artist.name)}">${track.artist.url ? `<a href="${escapeHtml(track.artist.url)}" target="_blank">${escapeHtml(track.artist.name)}</a>` : escapeHtml(track.artist.name)}</span>
+          <span class="track-stats">${escapeHtml(track.playcount)} ${scrobbleLabel}</span>
         </div>
       </li>
-    `
-            )
+    `;
+            })
             .join("");
 
-        const periodLabels = {
-            overall: "All Time",
-            "7day": "Last 7 Days",
-            "1month": "Last Month",
-            "3month": "Last 3 Months",
-            "6month": "Last 6 Months",
-            "12month": "Last Year",
-        };
+        const periodLabel = t(`periods.${period === "overall" ? "alltime" : period}`, locale);
 
-        const periodLabel = periodLabels[period] || "All Time";
+        const linkedUsername = `<a class="profile-link" href="https://www.last.fm/user/${escapeHtml(username)}" target="_blank">${escapeHtml(username)}</a>`
 
-        const titleHtml = showTitle 
-            ? `<h3>
-                ${profileHtml}
-                <span class="h3-suffix">Top Tracks</span>&nbsp;
-                <span class="period-label">(${escapeHtml(periodLabel)})</span>
-               </h3>`
+        const titleHtml = showTitle
+            ? `<h3>${t("top.top_tracks", locale, { username: linkedUsername })}&nbsp;<span class="period-label">(${escapeHtml(periodLabel)})</span></h3>`
             : "";
 
         // Read template

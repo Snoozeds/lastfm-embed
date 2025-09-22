@@ -1,5 +1,6 @@
 import { getUserTopAlbums } from "../services/lastfm.js";
 import { themes } from "../lib/themes.js";
+import { t } from "../utils/i18n.js";
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -43,11 +44,9 @@ export default async function topAlbumsRoute(req) {
         const showTitle = url.searchParams.get("showTitle")
             ? url.searchParams.get("showTitle") === "true"
             : true;
-        const showProfile = url.searchParams.has("showProfile")
-            ? url.searchParams.get("showProfile") === "true"
-            : true;
         const layout = url.searchParams.get("layout") || "vertical";
         const period = url.searchParams.get("period") || "overall";
+        const locale = url.searchParams.get("lang") || "en";
 
         if (!username) {
             return { error: "Missing user parameter", status: 400 };
@@ -70,44 +69,33 @@ export default async function topAlbumsRoute(req) {
         else verticalGridStyle += `grid-template-columns: 1fr;`;
         if (rows > 0) verticalGridStyle += `grid-auto-rows: calc(100% / ${rows});`;
 
-        // Profile HTML
-        const profileHtml = showProfile
-            ? `<a class="profile-link" href="https://www.last.fm/user/${escapeHtml(username)}" target="_blank">${escapeHtml(username)}</a>'s `
-            : "";
-
         // Album list HTML
         const albumsHtml = stats.topalbums.album
-            .map(
-                (album) => `
-      <li class="${escapeHtml(layout)}">
-        <img src="${escapeHtml(album.image)}" alt="${escapeHtml(album.name)} cover" />
-        <div class="album-info">
-          <span class="album-name" title="${escapeHtml(album.name)}">${album.url ? `<a href="${escapeHtml(album.url)}" target="_blank">${escapeHtml(album.name)}</a>` : escapeHtml(album.name)}</span>
-          <span class="artist-name" title="${escapeHtml(album.artist.name)}">${album.artist.url ? `<a href="${escapeHtml(album.artist.url)}" target="_blank">${escapeHtml(album.artist.name)}</a>` : escapeHtml(album.artist.name)}</span>
-          <span class="album-stats">${escapeHtml(album.playcount)} scrobble${album.playcount !== "1" ? "s" : ""}</span>
-        </div>
-      </li>
-    `
-            )
+            .map(album => {
+                const scrobbleLabel = album.playcount === "1" ? t("scrobble", locale) : t("scrobbles", locale);
+                return `
+                <li class="${escapeHtml(layout)}">
+                    <img src="${escapeHtml(album.image)}" alt="${escapeHtml(album.name)} cover" />
+                    <div class="album-info">
+                        <span class="album-name" title="${escapeHtml(album.name)}">
+                            ${album.url ? `<a href="${escapeHtml(album.url)}" target="_blank">${escapeHtml(album.name)}</a>` : escapeHtml(album.name)}
+                        </span>
+                        <span class="artist-name" title="${escapeHtml(album.artist.name)}">
+                            ${album.artist.url ? `<a href="${escapeHtml(album.artist.url)}" target="_blank">${escapeHtml(album.artist.name)}</a>` : escapeHtml(album.artist.name)}
+                        </span>
+                        <span class="album-stats">${escapeHtml(album.playcount)} ${scrobbleLabel}</span>
+                    </div>
+                </li>
+                `;
+            })
             .join("");
 
-        const periodLabels = {
-            overall: "All Time",
-            "7day": "Last 7 Days",
-            "1month": "Last Month",
-            "3month": "Last 3 Months",
-            "6month": "Last 6 Months",
-            "12month": "Last Year",
-        };
+        const periodLabel = t(`periods.${period === "overall" ? "alltime" : period}`, locale);
 
-        const periodLabel = periodLabels[period] || "All Time";
+        const linkedUsername = `<a class="profile-link" href="https://www.last.fm/user/${escapeHtml(username)}" target="_blank">${escapeHtml(username)}</a>`
 
-        const titleHtml = showTitle 
-            ? `<h3>
-                ${profileHtml}
-                <span class="h3-suffix">Top Albums</span>&nbsp;
-                <span class="period-label">(${escapeHtml(periodLabel)})</span>
-               </h3>`
+        const titleHtml = showTitle
+            ? `<h3>${t("top.top_albums", locale, { username: linkedUsername })}&nbsp;<span class="period-label">(${escapeHtml(periodLabel)})</span></h3>`
             : "";
 
         // Read template
@@ -120,7 +108,6 @@ export default async function topAlbumsRoute(req) {
             .replace("{{text}}", theme.text)
             .replace("{{url}}", theme.url)
             .replace("{{scrobble}}", theme.scrobble)
-            .replace("{{profile}}", profileHtml)
             .replace("{{period}}", escapeHtml(periodLabel))
             .replace("{{title}}", titleHtml)
             .replace("{{layout}}", escapeHtml(layout))

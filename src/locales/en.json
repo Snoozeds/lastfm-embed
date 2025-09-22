@@ -1,0 +1,29 @@
+{
+  "scrobble": "Scrobble",
+  "scrobbles": "Scrobbles",
+  "playing": {
+    "currently_playing": "{{username}}'s Currently Playing",
+    "now_playing": "Now Playing",
+    "not_playing": "Not currently playing anything."
+  },
+  "top": {
+    "top_artists": "{{username}}'s Top Artists",
+    "top_tracks": "{{username}}'s Top Tracks",
+    "top_albums": "{{username}}'s Top Albums"
+  },
+  "periods": {
+    "7day": "7 Days",
+    "1month": "1 Month",
+    "3month": "3 Months",
+    "6month": "6 Months",
+    "12month": "12 Months",
+    "alltime": "All Time"
+  },
+  "stats": {
+    "stats": "Stats",
+    "total_scrobbles": "Total Scrobbles",
+    "average_day": "Average / Day",
+    "loading_streak": "Loading streak...",
+    "current_streak": "Current Streak"
+  }
+}

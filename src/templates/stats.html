@@ -11,10 +11,8 @@
     <div class="card stats-card">
         {{#ifShowTitle}}
         <h3>
-            {{#ifShowProfile}}
             <a class="profile-link" href="https://www.last.fm/user/{{username}}" target="_blank">{{username}}</a>'s
-            {{/ifShowProfile}}
-            Stats
+            {{statsLabel}}
         </h3>
         {{/ifShowTitle}}
         {{#ifNoStats}}
@@ -24,21 +22,21 @@
         <div class="stats-grid">
             <div class="stat-item">
                 <div class="stat-number">{{totalScrobbles}}</div>
-                <div class="stat-label">Total Scrobbles</div>
+                <div class="stat-label">{{totalScrobblesLabel}}</div>
             </div>
 
             <div class="stat-divider"></div>
 
             <div class="stat-item">
                 <div class="stat-number">{{avgPerDay}}</div>
-                <div class="stat-label">Average / Day</div>
+                <div class="stat-label">{{averageLabel}}</div>
             </div>
 
             <div class="stat-divider"></div>
 
             <div class="stat-item" id="streak-container">
                 <div class="loading-spinner"></div>
-                <div class="stat-label">Loading streak...</div>
+                <div class="stat-label">{{loadingStreakLabel}}</div>
             </div>
         </div>
         {{/ifHasStats}}
@@ -61,7 +59,7 @@
                 const container = document.getElementById('streak-container');
                 container.innerHTML = `
         <div class="stat-number">${data.streak}</div>
-        <div class="stat-label">Current Streak</div>
+        <div class="stat-label">{{currentStreakLabel}}</div>
       `;
             })
             .catch(error => {

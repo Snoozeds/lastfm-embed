@@ -24,9 +24,9 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 | Parameter        | Endpoint             | Type       | Default       | Description |
 |-----------------|--------------------|-----------|---------------|-------------|
 | `user`          | All                | string    | —             | Last.fm username *(required)* |
+| `lang`          | All                | string    | `en`          | [ISO-639](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes#Table) (set 1) code for the language the embed should be in. Currently supports:<br>`en`, `de`
 | `theme`         | All                | string    | `default`     | Theme to style the embed |
 | `showTitle`     | All                | boolean   | `true`        | Whether to show the title of the embed (e.g "Top Tracks") or not.
-| `showProfile`   | All                | boolean   | `true`       | Show username in the embed (`true` / `false`) |
 | `limit`         | `top-tracks`, `top-albums`, `top-artists`       | number    | `5`           | Number of tracks/albums/artists to display (1–50) |
 | `period`        | `top-tracks`, `top-albums`, `top-artists`        | string    | `overall`     | Time range for top tracks/albums/artists: `overall`, `7day`, `1month`, `3month`, `6month`, `12month` |
 | `layout`        | `top-tracks`, `top-albums`, `top-artists`        | string    | `vertical`    | Display style: `vertical` or `horizontal` |
@@ -82,6 +82,46 @@ MIN_ITEMS_PER_ROW=1
 
 ---
 
+## i18n
+
+This project supports i18n in the embeds. Currently `en` (default), and `de` are supported.
+
+> [!NOTE]
+> If you wish to open a [pull request](https://github.com/Snoozeds/lastfm-embed/pulls) to add i18n, you only *need* to do step 1.
+### Steps:
+
+1. Create a .json file in `/src/locales`, with the name matching the 2 letter code (set 1) from the [ISO-639 list](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes#Table). Check `en.json` for the original strings.
+
+2. After that, update `/src/utils/i18n.js` to import your i18n file and use it.
+```js
+import en from "../locales/en.json" with { type: "json" };
+import de from "../locales/de.json" with { type: "json"};
+// import here
+
+const locales = {
+    en,
+    de, // make sure to add comma
+    // add 2 letter code here
+};
+```
+
+3. Edit `/public/index.html` to add the language.
+```html
+ <label class="flex flex-col text-sm">
+                Language
+                <select id="lang" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <option value="en" selected>English</option>
+                    <option value="de">Deutsch</option>
+                    <!-- Add lang here-->
+                </select>
+            </label>
+```
+
+## Contributors
+Thanks to my good friend [Flower](https://x.com/xfreshcutflower) for doing the German translation.
+
+---
+
 ## Custom Themes
 
 You can add your own themes to customize the look of the embed.
@@ -90,8 +130,8 @@ You can add your own themes to customize the look of the embed.
 
 1. Edit `/src/lib/themes.js` and add your theme.
 ```css
-myTheme: { bg: "#ffff", text: "#000000", url: "#0000ffff", scrobble: "#ffff" },
-````
+myTheme: { bg: "#ffff", text: "#000000", url: "#0000ffff", scrobble: "#ffff" }
+```
 
 > Each theme supports:  
 > - `bg` - Background color  

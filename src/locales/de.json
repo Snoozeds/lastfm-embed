@@ -1,0 +1,29 @@
+{
+  "scrobble": "Scrobbel",
+  "scrobbles": "Scrobbels",
+  "playing": {
+    "currently_playing": "{{username}} hört momentan",
+    "now_playing": "Läuft aktuell",
+    "not_playing": "Momentan wird nichts abgespielt."
+  },
+  "top": {
+    "top_artists": "{{username}}'s&nbsp;Top Künstler",
+    "top_tracks": "{{username}}'s&nbsp;Top Titel",
+    "top_albums": "{{username}}'s&nbsp;Top Alben"
+  },
+  "periods": {
+    "7day": "7 Tage",
+    "1month": "1 Monat",
+    "3month": "3 Monate",
+    "6month": "6 Monate",
+    "12month": "12 Monate",
+    "alltime": "Aller Zeit"
+  },
+  "stats": {
+    "stats": "Statistiken",
+    "total_scrobbles": "Totale Scrobbels",
+    "average_day": "Durchschnitt / Tag",
+    "loading_streak": "Streak Laden...",
+    "current_streak": "Momentaner Streak"
+  }
+}

@@ -29,6 +29,13 @@
                 </select>
             </label>
             <label class="flex flex-col text-sm">
+                Language
+                <select id="lang" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+                    <option value="en" selected>English</option>
+                    <option value="de">Deutsch</option>
+                </select>
+            </label>
+            <label class="flex flex-col text-sm">
                 Theme
                 <select id="theme"
                     class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
@@ -36,14 +43,6 @@
             <label class="flex flex-col text-sm">
                 Show Title
                 <select id="showTitle"
-                    class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
-                    <option value="true" selected>Yes</option>
-                    <option value="false">No</option>
-                </select>
-            </label>
-            <label class="flex flex-col text-sm">
-                Show Profile
-                <select id="showProfile"
                     class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
                     <option value="true" selected>Yes</option>
                     <option value="false">No</option>
@@ -276,11 +275,12 @@
             }
 
             const endpoint = endpointSel.value;
+            const lang = document.getElementById("lang").value;
             const themeName = document.getElementById("theme").value;
             const showTitle = document.getElementById("showTitle").value;
-            const showProfile = document.getElementById("showProfile").value;
 
-            let params = new URLSearchParams({ user, theme: themeName, showProfile, showTitle });
+
+            let params = new URLSearchParams({ user, lang, theme: themeName, showTitle });
 
             if (endpoint === "top-tracks" || endpoint === "top-albums" || endpoint === "top-artists") {
                 params.set("limit", document.getElementById("limit").value);
