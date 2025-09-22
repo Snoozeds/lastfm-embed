@@ -12,9 +12,9 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 
 <div align="center">
 
-| Currently Playing |
-|-------------------|
-| ![](/wiki/currently-playing.png) |
+| Currently Playing | Stats |
+|-------------------|------------|
+| ![](/wiki/currently-playing.png) | ![](/wiki/stats.png)
 
 </div>
 
