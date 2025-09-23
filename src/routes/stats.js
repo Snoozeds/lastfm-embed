@@ -120,6 +120,15 @@ export default async function statsRoute(req) {
             ? (url.searchParams.get("numberFormat") === "commas" || url.searchParams.get("numberFormat") === "comma")
             : true;
 
+        const borderSizeParam = url.searchParams.get("borderSize");
+        let borderSize = 0; // default value
+        if (borderSizeParam !== null) {
+            const parsed = parseInt(borderSizeParam, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 20) { // max size of 20px
+                borderSize = parsed;
+            }
+        }
+
         const theme = themes[themeName] || themes.default;
         const locale = url.searchParams.get("lang") || "en";
 
@@ -168,6 +177,7 @@ export default async function statsRoute(req) {
             themeText: theme.text,
             themeUrl: theme.url,
             themeScrobble: theme.scrobble,
+            borderSize: borderSize,
             totalScrobbles: formattedTotalScrobbles,
             avgPerDay: formattedAvgPerDay,
             currentStreak: "0", // Will be loaded via js in the stats.html template

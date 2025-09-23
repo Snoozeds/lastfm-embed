@@ -62,6 +62,16 @@ export default async function currentlyPlayingRoute(req) {
             : true;
         const themeName = url.searchParams.get("theme") || "default";
         const theme = themes[themeName] || themes.default;
+
+        const borderSizeParam = url.searchParams.get("borderSize");
+        let borderSize = 0; // default value
+        if (borderSizeParam !== null) {
+            const parsed = parseInt(borderSizeParam, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 20) { // max size of 20px
+                borderSize = parsed;
+            }
+        }
+
         const locale = url.searchParams.get("lang") || "en";
 
         if (!username) {
@@ -84,6 +94,7 @@ export default async function currentlyPlayingRoute(req) {
             themeBg: theme.bg,
             themeText: theme.text,
             themeUrl: theme.url,
+            borderSize: borderSize,
             nowPlaying: currentlyPlayingData.nowPlaying,
             trackImage: currentlyPlayingData.track?.image || "/images/default.jpg",
             trackName: currentlyPlayingData.track?.name || "",

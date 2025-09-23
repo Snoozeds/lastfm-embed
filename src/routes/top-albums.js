@@ -39,6 +39,16 @@ export default async function topAlbumsRoute(req) {
         }
 
         const username = url.searchParams.get("user");
+
+        const borderSizeParam = url.searchParams.get("borderSize");
+        let borderSize = 0; // default value
+        if (borderSizeParam !== null) {
+            const parsed = parseInt(borderSizeParam, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 20) { // max size of 20px
+                borderSize = parsed;
+            }
+        }
+
         const themeName = url.searchParams.get("theme") || "default";
         const limit = parseInt(url.searchParams.get("limit") || "5");
         const showTitle = url.searchParams.get("showTitle")
@@ -108,6 +118,7 @@ export default async function topAlbumsRoute(req) {
             .replace("{{text}}", theme.text)
             .replace("{{url}}", theme.url)
             .replace("{{scrobble}}", theme.scrobble)
+            .replace("{{borderSize}}", borderSize)
             .replace("{{period}}", escapeHtml(periodLabel))
             .replace("{{title}}", titleHtml)
             .replace("{{layout}}", escapeHtml(layout))

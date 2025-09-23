@@ -55,6 +55,15 @@ export default async function topTracksRoute(req) {
         const stats = await getUserTopTracks(username, limit, period);
         const theme = themes[themeName] || themes.default;
 
+        const borderSizeParam = url.searchParams.get("borderSize");
+        let borderSize = 0; // default value
+        if (borderSizeParam !== null) {
+            const parsed = parseInt(borderSizeParam, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 20) { // max size of 20px
+                borderSize = parsed;
+            }
+        }
+
         let rows = parseInt(url.searchParams.get("rows") || "0");
         rows = rows === 0 ? 0 : Math.max(MIN_ROWS, Math.min(rows, MAX_ROWS));
 
@@ -108,6 +117,7 @@ export default async function topTracksRoute(req) {
             .replace("{{text}}", theme.text)
             .replace("{{url}}", theme.url)
             .replace("{{scrobble}}", theme.scrobble)
+            .replace("{{borderSize}}", borderSize)
             .replace("{{title}}", titleHtml)
             .replace("{{profile}}", profileHtml)
             .replace("{{period}}", escapeHtml(periodLabel))

@@ -9,6 +9,7 @@
       --text-color: {{text}};
       --url-color: {{url}};
       --scrobble-color: {{scrobble}};
+      --border-size: {{borderSize}}px;
     }
     body {
       margin: 0;
@@ -20,6 +21,7 @@
       max-width: 720px;
       margin: 1rem auto;
       padding: 1.25rem;
+      border: var(--border-size) solid var(--url-color);
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.12);
       background-color: var(--bg-color);
