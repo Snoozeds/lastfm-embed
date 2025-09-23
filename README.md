@@ -54,6 +54,8 @@ I use this on [my own website](https://snoozeds.com), so you can see it being us
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FSnoozeds%2Flastfm-embed)
 
+> [!NOTE]
+> The variables below (besides `LAST_FM_API_KEY`) are also the defaults used if you don't define them, so you don't *have* to define them.
 Environment variables:
 ```
 LASTFM_API_KEY= # https://www.last.fm/api/account/create
