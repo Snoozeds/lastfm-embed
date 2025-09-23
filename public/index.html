@@ -41,6 +41,11 @@
                     class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
             </label>
             <label class="flex flex-col text-sm">
+                Border Size (px)
+                <input type="number" id="borderSize" value="0" min="0" max="10"
+                    class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
+            </label>
+            <label class="flex flex-col text-sm">
                 Show Title
                 <select id="showTitle"
                     class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1">
@@ -277,10 +282,11 @@
             const endpoint = endpointSel.value;
             const lang = document.getElementById("lang").value;
             const themeName = document.getElementById("theme").value;
+            const borderSize = document.getElementById("borderSize").value;
             const showTitle = document.getElementById("showTitle").value;
 
 
-            let params = new URLSearchParams({ user, lang, theme: themeName, showTitle });
+            let params = new URLSearchParams({ user, lang, theme: themeName, borderSize, showTitle });
 
             if (endpoint === "top-tracks" || endpoint === "top-albums" || endpoint === "top-artists") {
                 params.set("limit", document.getElementById("limit").value);
