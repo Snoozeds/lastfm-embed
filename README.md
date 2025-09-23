@@ -26,7 +26,7 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 | `user`          | All                | string    | —             | Last.fm username *(required)* |
 | `lang`          | All                | string    | `en`          | [ISO-639](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes#Table) (set 1) code for the language the embed should be in. Currently supports:<br>`en`, `de`
 | `theme`         | All                | string    | `default`     | Theme to style the embed |
-| `borderSize     | All                | number    | `0`           | Size of the border to put around the embed (in px). Max of 20px.
+| `borderSize`    | All                | number    | `0`           | Size of the border to put around the embed (in px). Max of 20px.
 | `showTitle`     | All                | boolean   | `true`        | Whether to show the title of the embed (e.g "Top Tracks") or not.
 | `limit`         | `top-tracks`, `top-albums`, `top-artists`       | number    | `5`           | Number of tracks/albums/artists to display (1–50) |
 | `period`        | `top-tracks`, `top-albums`, `top-artists`        | string    | `overall`     | Time range for top tracks/albums/artists: `overall`, `7day`, `1month`, `3month`, `6month`, `12month` |
