@@ -56,6 +56,7 @@ I use this on [my own website](https://snoozeds.com), so you can see it being us
 
 > [!NOTE]
 > The variables below (besides `LAST_FM_API_KEY`) are also the defaults used if you don't define them, so you don't *have* to define them.
+
 Environment variables:
 ```
 LASTFM_API_KEY= # https://www.last.fm/api/account/create
