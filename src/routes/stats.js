@@ -144,7 +144,7 @@ export default async function statsRoute(req) {
                 // Calculate streak if not cached
                 const stats = await getUserStats(username);
                 cached = { streak: stats.currentStreak };
-                setCache(streakCacheKey, cached, 1800); // 30 mins cache for streak
+                setCache(streakCacheKey, cached, 21600); // 6h cache for streak only
             }
 
             const formattedStreak = formatStreak(cached.streak);
