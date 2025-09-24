@@ -64,6 +64,15 @@ export default async function topTracksRoute(req) {
             }
         }
 
+        const borderRadiusParam = url.searchParams.get("borderRadius");
+        let borderRadius = 16; // default value
+        if (borderRadiusParam !== null) {
+            const parsed = parseInt(borderRadiusParam, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 32) { // max size of 32px
+                borderRadius = parsed;
+            }
+        }
+
         let rows = parseInt(url.searchParams.get("rows") || "0");
         rows = rows === 0 ? 0 : Math.max(MIN_ROWS, Math.min(rows, MAX_ROWS));
 
@@ -118,6 +127,7 @@ export default async function topTracksRoute(req) {
             .replace("{{url}}", theme.url)
             .replace("{{scrobble}}", theme.scrobble)
             .replace("{{borderSize}}", borderSize)
+            .replace("{{borderRadius}}", borderRadius)
             .replace("{{title}}", titleHtml)
             .replace("{{profile}}", profileHtml)
             .replace("{{period}}", escapeHtml(periodLabel))

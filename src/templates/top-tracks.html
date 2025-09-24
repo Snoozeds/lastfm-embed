@@ -10,6 +10,7 @@
       --url-color: {{url}};
       --scrobble-color: {{scrobble}};
       --border-size: {{borderSize}}px;
+      --border-radius: {{borderRadius}}px;
     }
     body {
       margin: 0;
@@ -22,7 +23,7 @@
       margin: 1rem auto;
       padding: 1.25rem;
       border: var(--border-size) solid var(--url-color);
-      border-radius: 16px;
+      border-radius: var(--border-radius);
       box-shadow: 0 6px 16px rgba(0,0,0,0.12);
       background-color: var(--bg-color);
     }

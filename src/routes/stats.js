@@ -129,6 +129,15 @@ export default async function statsRoute(req) {
             }
         }
 
+        const borderRadiusParam = url.searchParams.get("borderRadius");
+        let borderRadius = 16; // default value
+        if (borderRadiusParam !== null) {
+            const parsed = parseInt(borderRadiusParam, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 32) { // max size of 32px
+                borderRadius = parsed;
+            }
+        }
+
         const theme = themes[themeName] || themes.default;
         const locale = url.searchParams.get("lang") || "en";
 
@@ -178,6 +187,7 @@ export default async function statsRoute(req) {
             themeUrl: theme.url,
             themeScrobble: theme.scrobble,
             borderSize: borderSize,
+            borderRadius: borderRadius,
             totalScrobbles: formattedTotalScrobbles,
             avgPerDay: formattedAvgPerDay,
             currentStreak: "0", // Will be loaded via js in the stats.html template
