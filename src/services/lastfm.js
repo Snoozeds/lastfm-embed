@@ -175,7 +175,7 @@ export async function getUserStats(username) {
         currentStreak: streak,
     };
 
-    setCache(cacheKey, result, 1800); // Cache for 30 mins, as streak calc can take a long ass time.
+    setCache(cacheKey, result, 30);
     return result;
 }
 
