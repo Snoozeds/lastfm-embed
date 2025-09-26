@@ -167,12 +167,14 @@ export async function getUserStats(username) {
     const avgPerDay = (totalScrobbles / daysSince).toFixed(1);
 
     // Calculate streak
-    const streak = await calculateCurrentStreak(username);
+    const streakData = await calculateCurrentStreak(username);
 
     const result = {
-        totalScrobbles: totalScrobbles.toLocaleString(), // Format with commas
+        totalScrobbles: totalScrobbles.toLocaleString(),
         avgPerDay,
-        currentStreak: streak,
+        currentStreak: streakData.days,
+        streakStartDate: streakData.startDate,
+        streakEndDate: streakData.endDate,
     };
 
     setCache(cacheKey, result, 30);
@@ -219,7 +221,13 @@ async function calculateCurrentStreak(username) {
         page++;
     }
 
-    if (dayCounts.size === 0) return 0;
+    if (dayCounts.size === 0) {
+        return {
+            days: 0,
+            startDate: null,
+            endDate: null
+        };
+    }
 
     // Find the most recent scrobble date
     const sortedDates = Array.from(dayCounts).sort().reverse();
@@ -227,6 +235,7 @@ async function calculateCurrentStreak(username) {
 
     // Calculate streak backwards from most recent scrobble date
     let streak = 0;
+    let streakStartDate = null;
     const startDate = new Date(mostRecentScrobbleDate + 'T00:00:00.000Z');
 
     for (let i = 0; i < 1000; i++) {
@@ -236,11 +245,16 @@ async function calculateCurrentStreak(username) {
 
         if (dayCounts.has(dateStr)) {
             streak++;
+            streakStartDate = dateStr;
         } else {
             // Break here as gap has been found, streak ended.
             break;
         }
     }
 
-    return streak;
+    return {
+        days: streak,
+        startDate: streakStartDate,
+        endDate: mostRecentScrobbleDate
+    };
 }

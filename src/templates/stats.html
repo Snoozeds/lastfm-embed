@@ -57,10 +57,12 @@
             })
             .then(data => {
                 const container = document.getElementById('streak-container');
+                const datesHtml = data.dates ? `<div class="stat-dates">${data.dates}</div>` : '';
                 container.innerHTML = `
-        <div class="stat-number">${data.streak}</div>
-        <div class="stat-label">{{currentStreakLabel}}</div>
-      `;
+            <div class="stat-number">${data.streak}</div>
+            <div class="stat-label">{{currentStreakLabel}}</div>
+            ${datesHtml}
+        `;
             })
             .catch(error => {
                 console.error('Failed to load streak:', error);
@@ -197,6 +199,22 @@
             ;
             opacity: 0.2;
             margin: 0 8px;
+        }
+
+        .stat-dates {
+            font-size: 10px;
+
+            color: {
+                    {
+                    themeScrobble
+                }
+            }
+
+            ;
+            font-weight: 400;
+            line-height: 1.2;
+            margin-top: 2px;
+            opacity: 0.8;
         }
 
         /* Loading spinner */

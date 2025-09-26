@@ -71,6 +71,28 @@ function formatStreak(days) {
     return `${years} years+`;
 }
 
+function formatStreakDates(startDate, endDate) {
+    if (!startDate || !endDate) return "";
+
+    const formatDate = (dateStr) => {
+        const date = new Date(dateStr + 'T00:00:00.000Z');
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: startDate !== endDate && date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+        });
+    };
+
+    const formattedStart = formatDate(startDate);
+    const formattedEnd = formatDate(endDate);
+
+    if (startDate === endDate) {
+        return formattedEnd;
+    } else {
+        return `${formattedStart} - ${formattedEnd}`;
+    }
+}
+
 // Basic stats without streak (will calculate streak later)
 async function getBasicUserStats(username) {
     const BASE_URL = "http://ws.audioscrobbler.com/2.0/";
@@ -152,13 +174,25 @@ export default async function statsRoute(req) {
             if (!cached) {
                 // Calculate streak if not cached
                 const stats = await getUserStats(username);
-                cached = { streak: stats.currentStreak };
+                cached = {
+                    streak: stats.currentStreak,
+                    startDate: stats.streakStartDate,
+                    endDate: stats.streakEndDate
+                };
                 setCache(streakCacheKey, cached, 21600); // 6h cache for streak only
             }
 
             const formattedStreak = formatStreak(cached.streak);
+            const formattedDates = formatStreakDates(cached.startDate, cached.endDate);
+
             return {
-                json: { streak: formattedStreak },
+                json: {
+                    streak: formattedStreak,
+                    dates: formattedDates,
+                    days: cached.streak,
+                    startDate: cached.startDate,
+                    endDate: cached.endDate
+                },
                 status: 200
             };
         }
