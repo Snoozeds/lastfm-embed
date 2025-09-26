@@ -71,12 +71,12 @@ function formatStreak(days) {
     return `${years} years+`;
 }
 
-function formatStreakDates(startDate, endDate) {
+function formatStreakDates(startDate, endDate, locale) {
     if (!startDate || !endDate) return "";
 
     const formatDate = (dateStr) => {
         const date = new Date(dateStr + 'T00:00:00.000Z');
-        return date.toLocaleDateString('en-US', {
+        return date.toLocaleDateString(locale, {
             month: 'short',
             day: 'numeric',
             year: startDate !== endDate && date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
@@ -183,7 +183,7 @@ export default async function statsRoute(req) {
             }
 
             const formattedStreak = formatStreak(cached.streak);
-            const formattedDates = formatStreakDates(cached.startDate, cached.endDate);
+            const formattedDates = formatStreakDates(cached.startDate, cached.endDate, locale);
 
             return {
                 json: {
@@ -228,6 +228,7 @@ export default async function statsRoute(req) {
             noStats,
 
             // Translations
+            locale,
             statsLabel: t("stats.stats", locale),
             totalScrobblesLabel: t("stats.total_scrobbles", locale),
             averageLabel: t("stats.average_day", locale),

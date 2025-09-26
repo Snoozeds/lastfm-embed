@@ -46,7 +46,8 @@
     <script>
         // Load streak data asynchronously
         const username = "{{username}}";
-        const streakUrl = `${window.location.origin}/api/stats?user=${encodeURIComponent(username)}&streakOnly=true`;
+        const lang = "{{locale}}";
+        const streakUrl = `${window.location.origin}/api/stats?user=${encodeURIComponent(username)}&streakOnly=true&lang=${lang}`;
 
         fetch(streakUrl)
             .then(response => {
