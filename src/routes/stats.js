@@ -32,7 +32,6 @@ function formatNumber(num, useCommas = true) {
     return decPart ? `${formattedInt}${decimalSep}${decPart}` : formattedInt;
 }
 
-
 function renderTemplate(template, data) {
     template = template.replace(
         /{{#ifShowTitle}}([\s\S]*?){{\/ifShowTitle}}/g,
@@ -93,8 +92,16 @@ function formatStreakDates(startDate, endDate, locale) {
     }
 }
 
+function formatRegistrationDate(registeredUnix, locale) {
+    const date = new Date(registeredUnix);
+    return date.toLocaleDateString(locale, {
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
 // Basic stats without streak (will calculate streak later)
-async function getBasicUserStats(username) {
+async function getBasicUserStats(username, locale = 'en') {
     const BASE_URL = "http://ws.audioscrobbler.com/2.0/";
     const API_KEY = process.env.LASTFM_API_KEY;
 
@@ -117,6 +124,7 @@ async function getBasicUserStats(username) {
     return {
         totalScrobbles: totalScrobbles.toLocaleString(),
         avgPerDay,
+        registeredDate: formatRegistrationDate(registeredUnix, locale),
     };
 }
 
@@ -203,7 +211,7 @@ export default async function statsRoute(req) {
             return { html: cached, status: 200 };
         }
 
-        const stats = await getBasicUserStats(username);
+        const stats = await getBasicUserStats(username, locale);
         const noStats = !stats.totalScrobbles || stats.totalScrobbles === 0;
         const template = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
@@ -224,6 +232,7 @@ export default async function statsRoute(req) {
             borderRadius: borderRadius,
             totalScrobbles: formattedTotalScrobbles,
             avgPerDay: formattedAvgPerDay,
+            registeredDate: stats.registeredDate,
             currentStreak: "0", // Will be loaded via js in the stats.html template
             noStats,
 
@@ -234,6 +243,7 @@ export default async function statsRoute(req) {
             averageLabel: t("stats.average_day", locale),
             loadingStreakLabel: t("stats.loading_streak", locale),
             currentStreakLabel: t("stats.current_streak", locale),
+            sinceLabel: t("stats.since", locale),
         };
 
         const html = renderTemplate(template, renderData);

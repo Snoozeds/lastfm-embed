@@ -24,6 +24,7 @@
     "total_scrobbles": "Total Scrobbles",
     "average_day": "Average / Day",
     "loading_streak": "Loading streak...",
-    "current_streak": "Current Streak"
+    "current_streak": "Current Streak",
+    "since": "Since"
   }
 }

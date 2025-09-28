@@ -24,6 +24,7 @@
     "total_scrobbles": "Totale Scrobbels",
     "average_day": "Durchschnitt / Tag",
     "loading_streak": "Streak Laden...",
-    "current_streak": "Momentaner Streak"
+    "current_streak": "Momentaner Streak",
+    "since": "Seit"
   }
 }

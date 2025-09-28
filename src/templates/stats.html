@@ -23,6 +23,7 @@
             <div class="stat-item">
                 <div class="stat-number">{{totalScrobbles}}</div>
                 <div class="stat-label">{{totalScrobblesLabel}}</div>
+                <div class="stat-since">{{sinceLabel}} {{registeredDate}}</div>
             </div>
 
             <div class="stat-divider"></div>
@@ -30,6 +31,7 @@
             <div class="stat-item">
                 <div class="stat-number">{{avgPerDay}}</div>
                 <div class="stat-label">{{averageLabel}}</div>
+                <div class="stat-since">{{sinceLabel}} {{registeredDate}}</div>
             </div>
 
             <div class="stat-divider"></div>
@@ -80,21 +82,11 @@
         .stats-card {
             display: flex;
             flex-direction: column;
-
-            background: {
-                    {
-                    themeBg
-                }
-            }
-
-            ;
-
+            background: {{themeBg}};
             border: {{borderSize}}px solid {{themeUrl}};
             border-radius: {{borderRadius}}px;
             padding: 16px 20px;
-            font-family: "Helvetica Neue",
-            Arial,
-            sans-serif;
+            font-family: "Helvetica Neue", Arial, sans-serif;
         }
 
         .stats-card h3 {
@@ -102,36 +94,17 @@
             font-size: 14px;
             font-weight: 600;
             line-height: 1.25;
-
-            color: {
-                    {
-                    themeText
-                }
-            }
-
-            ;
+            color: {{themeText}};
         }
 
         .stats-card p {
-            color: {
-                    {
-                    themeScrobble
-                }
-            }
-
-            ;
+            color: {{themeScrobble}};
             font-size: 14px;
             margin: 0;
         }
 
         .profile-link {
-            color: {
-                    {
-                    themeUrl
-                }
-            }
-
-            ;
+            color: {{themeUrl}};
             text-decoration: none;
             font-weight: 600;
         }
@@ -161,57 +134,38 @@
         .stat-number {
             font-size: 20px;
             font-weight: 600;
-
-            color: {
-                    {
-                    themeText
-                }
-            }
-
-            ;
+            color: {{themeText}};
             line-height: 1.25;
             margin-bottom: 4px;
         }
 
         .stat-label {
             font-size: 12px;
-
-            color: {
-                    {
-                    themeScrobble
-                }
-            }
-
-            ;
+            color: {{themeScrobble}};
             font-weight: 500;
             line-height: 1.33;
+        }
+
+        .stat-since {
+            font-size: 10px;
+            color: {{themeScrobble}};
+            font-weight: 400;
+            line-height: 1.2;
+            margin-top: 2px;
+            opacity: 0.8;
         }
 
         .stat-divider {
             width: 1px;
             height: 48px;
-
-            background-color: {
-                    {
-                    themeUrl
-                }
-            }
-
-            ;
+            background-color: {{themeUrl}};
             opacity: 0.2;
             margin: 0 8px;
         }
 
         .stat-dates {
             font-size: 10px;
-
-            color: {
-                    {
-                    themeScrobble
-                }
-            }
-
-            ;
+            color: {{themeScrobble}};
             font-weight: 400;
             line-height: 1.2;
             margin-top: 2px;
@@ -222,14 +176,7 @@
         .loading-spinner {
             width: 20px;
             height: 20px;
-
-            border: 2px solid {
-                    {
-                    themeUrl
-                }
-            }
-
-            ;
+            border: 2px solid {{themeUrl}};
             border-top: 2px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -241,7 +188,6 @@
             0% {
                 transform: rotate(0deg);
             }
-
             100% {
                 transform: rotate(360deg);
             }
