@@ -110,7 +110,15 @@ export async function getCurrentlyPlaying(username) {
             },
             album: {
                 name: track.album?.["#text"] || "",
-                url: track.album?.url || ""
+                // Construct album URL from artist and album name.
+                url: (() => {
+                    const albumName = track.album?.["#text"];
+                    const artistName = track.artist?.["#text"] || track.artist?.name;
+                    if (albumName && artistName) {
+                        return `https://www.last.fm/music/${encodeURIComponent(artistName)}/${encodeURIComponent(albumName)}`;
+                    }
+                    return "";
+                })()
             },
             image: track.image?.[1]?.["#text"] || DEFAULT_IMAGE
         }
