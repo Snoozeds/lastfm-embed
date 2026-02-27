@@ -1,5 +1,5 @@
 import { getCache, setCache } from "../utils/cache.js";
-import { themes } from "../lib/themes.js";
+import { resolveTheme } from "../lib/themes.js";
 import { getUserStats } from "../services/lastfm.js";
 import { t } from "../utils/i18n.js";
 import fs from "fs/promises";
@@ -168,7 +168,7 @@ export default async function statsRoute(req) {
             }
         }
 
-        const theme = themes[themeName] || themes.default;
+        const theme = resolveTheme(url.searchParams);
         const locale = url.searchParams.get("lang") || "en";
 
         if (!username) {

@@ -1,5 +1,5 @@
 import { getUserTopAlbums } from "../services/lastfm.js";
-import { themes } from "../lib/themes.js";
+import { resolveTheme } from "../lib/themes.js";
 import { t } from "../utils/i18n.js";
 import { readFile } from "fs/promises";
 import path from "path";
@@ -72,7 +72,7 @@ export default async function topAlbumsRoute(req) {
         }
 
         const stats = await getUserTopAlbums(username, limit, period);
-        const theme = themes[themeName] || themes.default;
+        const theme = resolveTheme(url.searchParams);
 
         let rows = parseInt(url.searchParams.get("rows") || "0");
         rows = rows === 0 ? 0 : Math.max(MIN_ROWS, Math.min(rows, MAX_ROWS));

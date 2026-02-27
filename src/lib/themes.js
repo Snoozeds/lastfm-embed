@@ -1,3 +1,4 @@
+// Default theme presets /////////////////////////////////////////////////////////////////////////
 export const themes = {
   default: { bg: "#ffffff", text: "#000000", url: "#1a73e8", scrobble: "#5f6368" },
   dark: { bg: "#121212", text: "#e0e0e0", url: "#82b1ff", scrobble: "#9e9e9e" },
@@ -18,3 +19,36 @@ export const themes = {
   materialDark: { bg: "#202124", text: "#e8eaed", url: "#8ab4f8", scrobble: "#f28b82" },
   cyberpunk: { bg: "#0d0221", text: "#fffbf1", url: "#ff2e88", scrobble: "#08f7fe" },
 };
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Used for custom themes
+const HEX_RE = /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+const FUNC_RE = /^(rgba?|hsla?)\([\d\s,%.\/]+\)$/i;
+const KEYWORD_RE = /^[a-z]+$/i;
+
+function isValidColor(value) {
+    if (typeof value !== "string") return false;
+    const v = value.trim();
+    return HEX_RE.test(v) || FUNC_RE.test(v) || KEYWORD_RE.test(v);
+}
+
+export function resolveTheme(urlParams) {
+    const themeName = urlParams.get("theme") || "default";
+    const base = themes[themeName] || themes.default;
+
+    const overrides = {};
+    const candidates = {
+        bg: urlParams.get("bgColor"),
+        text: urlParams.get("textColor"),
+        url: urlParams.get("urlColor"),
+        scrobble: urlParams.get("scrobbleColor"),
+    };
+
+    for (const [key, value] of Object.entries(candidates)) {
+        if (value !== null && isValidColor(value)) {
+            overrides[key] = value.trim();
+        }
+    }
+
+    return { ...base, ...overrides };
+}

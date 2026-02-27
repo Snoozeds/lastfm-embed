@@ -1,5 +1,5 @@
 import { getUserTopTracks } from "../services/lastfm.js";
-import { themes } from "../lib/themes.js";
+import { resolveTheme } from "../lib/themes.js";
 import { t } from "../utils/i18n.js";
 import { readFile } from "fs/promises";
 import path from "path";
@@ -53,7 +53,7 @@ export default async function topTracksRoute(req) {
         }
 
         const stats = await getUserTopTracks(username, limit, period);
-        const theme = themes[themeName] || themes.default;
+        const theme = resolveTheme(url.searchParams);
 
         const borderSizeParam = url.searchParams.get("borderSize");
         let borderSize = 0; // default value

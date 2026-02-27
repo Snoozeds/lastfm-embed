@@ -35,11 +35,77 @@
                     <option value="de">Deutsch</option>
                 </select>
             </label>
-            <label class="flex flex-col text-sm">
-                Theme
-                <select id="theme"
-                    class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
-            </label>
+
+            <!-- Theme section -->
+            <div class="flex flex-col gap-2">
+                <label class="flex flex-col text-sm">
+                    Theme
+                    <select id="theme" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
+                </label>
+
+                <!-- Custom colours toggle -->
+                <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+                    <input type="checkbox" id="customColorsToggle" class="accent-blue-500 w-4 h-4">
+                    Customise colours
+                </label>
+
+                <!-- Custom colour pickers -->
+                <div id="customColorsPanel" class="hidden flex flex-col gap-2 pl-2 border-l-2 border-gray-600">
+                    <p class="text-xs text-gray-400">Each override is applied on top of the selected theme. Click ✕ to reset to the theme default.</p>
+
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-medium">Background</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="color" id="bgColor"
+                                    class="w-8 h-8 rounded cursor-pointer border border-gray-600 bg-transparent p-0.5 shrink-0">
+                                <input type="text" id="bgColorText" maxlength="9" placeholder="theme default"
+                                    class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
+                                <button type="button" data-clear="bgColor"
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-medium">Text</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="color" id="textColor"
+                                    class="w-8 h-8 rounded cursor-pointer border border-gray-600 bg-transparent p-0.5 shrink-0">
+                                <input type="text" id="textColorText" maxlength="9" placeholder="theme default"
+                                    class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
+                                <button type="button" data-clear="textColor"
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-medium">Links / Accent</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="color" id="urlColor"
+                                    class="w-8 h-8 rounded cursor-pointer border border-gray-600 bg-transparent p-0.5 shrink-0">
+                                <input type="text" id="urlColorText" maxlength="9" placeholder="theme default"
+                                    class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
+                                <button type="button" data-clear="urlColor"
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-medium">Scrobble Count (Secondary Text)</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="color" id="scrobbleColor"
+                                    class="w-8 h-8 rounded cursor-pointer border border-gray-600 bg-transparent p-0.5 shrink-0">
+                                <input type="text" id="scrobbleColorText" maxlength="9" placeholder="theme default"
+                                    class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
+                                <button type="button" data-clear="scrobbleColor"
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
             <label class="flex flex-col text-sm">
                 Border Size (px)
                 <input type="number" id="borderSize" value="0" min="0" max="20"
@@ -160,6 +226,7 @@
     <script>
         const base = window.location.origin;
 
+        // Theme loading
         let themes = {};
 
         async function loadThemes() {
@@ -172,6 +239,7 @@
                     const opt = document.createElement("option");
                     opt.value = k;
                     opt.textContent = k;
+                    if (k === "default") opt.selected = true;
                     sel.appendChild(opt);
                 });
             } catch (err) {
@@ -181,9 +249,88 @@
                     default: { bg: "#ffffff", text: "#000000", url: "#1a73e8", scrobble: "#5f6368" },
                 };
             }
+            syncPickersToTheme();
         }
 
         loadThemes();
+
+        // Custom colour logic
+        const COLOR_FIELDS = [
+            { param: "bgColor",       picker: "bgColor",       text: "bgColorText",       themeKey: "bg"       },
+            { param: "textColor",     picker: "textColor",     text: "textColorText",     themeKey: "text"     },
+            { param: "urlColor",      picker: "urlColor",      text: "urlColorText",      themeKey: "url"      },
+            { param: "scrobbleColor", picker: "scrobbleColor", text: "scrobbleColorText", themeKey: "scrobble" },
+        ];
+
+        // Track which params have been overridden
+        const overridden = {};
+        COLOR_FIELDS.forEach(f => overridden[f.param] = false);
+
+        function isValidHex(val) {
+            return /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(val.trim());
+        }
+
+        // Update colour pickers (only for non-overridden fields)
+        function syncPickersToTheme() {
+            const themeName = document.getElementById("theme").value;
+            const themeData = themes[themeName] || themes["default"] || {};
+            COLOR_FIELDS.forEach(({ param, picker, text, themeKey }) => {
+                if (overridden[param]) return;
+                const val = themeData[themeKey] || "#000000";
+                document.getElementById(picker).value = val;
+                document.getElementById(text).value = "";
+                document.getElementById(text).placeholder = val;
+            });
+        }
+
+        document.getElementById("theme").addEventListener("change", syncPickersToTheme);
+
+        // Show/hide the panel
+        document.getElementById("customColorsToggle").addEventListener("change", function () {
+            document.getElementById("customColorsPanel").classList.toggle("hidden", !this.checked);
+        });
+
+        COLOR_FIELDS.forEach(({ param, picker, text }) => {
+            // Colour picker to text input
+            document.getElementById(picker).addEventListener("input", function () {
+                overridden[param] = true;
+                document.getElementById(text).value = this.value;
+            });
+            // Text input to colour picker
+            document.getElementById(text).addEventListener("input", function () {
+                const val = this.value.trim();
+                if (isValidHex(val)) {
+                    overridden[param] = true;
+                    document.getElementById(picker).value = val.slice(0, 7);
+                } else if (val === "") {
+                    overridden[param] = false;
+                    syncPickersToTheme();
+                }
+            });
+        });
+
+        // Clear/reset buttons
+        document.querySelectorAll(".clear-color").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const param = this.dataset.clear;
+                overridden[param] = false;
+                const field = COLOR_FIELDS.find(f => f.param === param);
+                document.getElementById(field.text).value = "";
+                syncPickersToTheme();
+            });
+        });
+
+        // Collect active colour overrides
+        function appendColorParams(params) {
+            if (!document.getElementById("customColorsToggle").checked) return;
+            COLOR_FIELDS.forEach(({ param, picker, text }) => {
+                if (!overridden[param]) return;
+                // Prefer text field, fall back to picker value
+                const textVal = document.getElementById(text).value.trim();
+                const val = (textVal && isValidHex(textVal)) ? textVal : document.getElementById(picker).value;
+                if (val) params.set(param, val);
+            });
+        }
 
         const endpointSel = document.getElementById("endpoint");
         const topControls = document.getElementById("topControls");
@@ -285,14 +432,17 @@
             }
 
             const endpoint = endpointSel.value;
-            const lang = document.getElementById("lang").value;
-            const themeName = document.getElementById("theme").value;
-            const borderSize = document.getElementById("borderSize").value;
-            const borderRadius = document.getElementById("borderRadius").value;
-            const showTitle = document.getElementById("showTitle").value;
+            const params = new URLSearchParams({
+                user,
+                lang:         document.getElementById("lang").value,
+                theme:        document.getElementById("theme").value,
+                borderSize:   document.getElementById("borderSize").value,
+                borderRadius: document.getElementById("borderRadius").value,
+                showTitle:    document.getElementById("showTitle").value,
+            });
 
-
-            let params = new URLSearchParams({ user, lang, theme: themeName, borderSize, borderRadius, showTitle });
+            // Append custom colour overrides (if any)
+            appendColorParams(params);
 
             if (endpoint === "top-tracks" || endpoint === "top-albums" || endpoint === "top-artists") {
                 params.set("limit", document.getElementById("limit").value);

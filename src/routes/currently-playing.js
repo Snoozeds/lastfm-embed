@@ -1,5 +1,5 @@
 import { getCache, setCache } from "../utils/cache.js";
-import { themes } from "../lib/themes.js";
+import { resolveTheme } from "../lib/themes.js";
 import { getCurrentlyPlaying } from "../services/lastfm.js";
 import { t } from "../utils/i18n.js";
 import fs from "fs/promises";
@@ -61,7 +61,7 @@ export default async function currentlyPlayingRoute(req) {
             ? url.searchParams.get("showTitle") === "true"
             : true;
         const themeName = url.searchParams.get("theme") || "default";
-        const theme = themes[themeName] || themes.default;
+        const theme = resolveTheme(url.searchParams);
 
         const borderSizeParam = url.searchParams.get("borderSize");
         let borderSize = 0; // default value

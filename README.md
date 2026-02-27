@@ -26,6 +26,10 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 | `user`          | All                | string    | —             | Last.fm username *(required)* |
 | `lang`          | All                | string    | `en`          | [ISO-639](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes#Table) (set 1) code for the language the embed should be in. Currently supports:<br>`en`, `de`
 | `theme`         | All                | string    | `default`     | Theme to style the embed |
+| `bgColor`       | All                | hex       | `#ffffff`     | Custom background color (overrides `theme`'s background color.)
+| `textColor`     | All                | hex       | `#000000`     | Custom text color (overrides `theme`'s text color.)
+| `urlColor`      | All                | hex       | `#1a73e8`     | Custom URL color (overrides `theme`'s URL color.)
+| `scrobbleColor` | All                | hex       | `#5f6368`     | Custom scrobble/secondary text color (overrides `theme`'s scrobble/secondary text color.)
 | `borderSize`    | All                | number    | `0`           | Size of the border to put around the embed (in px). Max of `20px`.
 | `borderRadius`  | All                | number    | `16`          | How rounded the corners of the embed should be (in px). Max of `32px`. |
 | `showTitle`     | All                | boolean   | `true`        | Whether to show the title of the embed (e.g "Top Tracks") or not.
@@ -127,7 +131,7 @@ Thanks to my good friend [Flower](https://x.com/xfreshcutflower) for doing the G
 
 ---
 
-## Custom Themes
+## Custom Themes (Contributing)
 
 You can add your own themes to customize the look of the embed.
 
