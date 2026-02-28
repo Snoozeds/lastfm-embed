@@ -22,7 +22,7 @@ const server = http.createServer((req, res) => {
 
   // API routes
   if (pathname === "/api/currently-playing") return handlerCurrentlyPlaying(req, res);
-  if (pathname === "/api/currently-playing/json") return handlerCurrentlyPlayingJson(req, res);
+  if (pathname === "/api/currently-playing-json") return handlerCurrentlyPlayingJson(req, res);
   if (pathname === "/api/themes") return handlerThemes(req, res);
   if (pathname === "/api/top-artists") return handlerTopArtists(req, res);
   if (pathname === "/api/top-tracks") return handlerTopTracks(req, res);

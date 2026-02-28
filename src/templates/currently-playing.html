@@ -147,7 +147,7 @@
         function buildJsonUrl() {
             const params = new URLSearchParams(window.location.search);
             if (!params.has("user")) params.set("user", username);
-            return "/api/currently-playing/json?" + params.toString();
+            return "/api/currently-playing-json?" + params.toString();
         }
 
         function show(el) { if (el) el.style.display = ""; }
