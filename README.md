@@ -41,6 +41,7 @@ Easy-to-use and customisable embeds for last.fm that you can use on your website
 | `itemsPerRow`   | `top-tracks`, `top-albums`, `top-artists`  horizontal | number | `5`           | Number of tracks per row in horizontal layout |
 | `usePlaceholderImage` | `top-artists` | boolean | `false` | When `true`, shows Last.fm's placeholder images for artists (as the API only provides that).<br>When `false`, displays the ranking number instead of an image.
 | `numberFormat` | `stats` | string | `commas` | When `commas`, numbers are displayed like `123,456.78`.<br>When `periods`, numbers are displayed like `123.456,78`.
+| `format`       | `currently-playing` | string | — | The format the response is sent in. Supports `json`.
 
 ---
 

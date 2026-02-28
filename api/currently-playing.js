@@ -11,6 +11,13 @@ export default async function handler(req, res) {
     }
     
     const result = await currentlyPlayingRoute(req);
+
+    if (result.json) {
+        res.setHeader("Content-Type", "application/json");
+        res.statusCode = result.status || 200;
+        res.end(JSON.stringify(result.json));
+        return;
+    }
     
     // Handle error cases
     if (result.error) {

@@ -44,6 +44,14 @@ export default async function currentlyPlayingRoute(req) {
             throw new Error('Invalid request object');
         }
 
+        const format = url.searchParams.get("format");
+        if (format === "json") {
+            const username = url.searchParams.get("user");
+            if (!username) return { json: { error: "Missing user parameter" }, status: 400 };
+            const data = await getCurrentlyPlaying(username);
+            return { json: data, status: 200 };
+        }
+
         const username = url.searchParams.get("user");
         const showTitle = url.searchParams.get("showTitle")
             ? url.searchParams.get("showTitle") === "true"
@@ -119,29 +127,5 @@ export default async function currentlyPlayingRoute(req) {
             html: `<p>Error: ${escapeHtml(err?.message)}</p>`,
             status: 500
         };
-    }
-}
-
-// JSON Endpoint
-export async function currentlyPlayingJsonRoute(req) {
-    try {
-        let url;
-        if (typeof req === "string") {
-            url = new URL(req);
-        } else if (req.url) {
-            url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-        } else {
-            throw new Error("Invalid request object");
-        }
-
-        const username = url.searchParams.get("user");
-        if (!username) {
-            return { json: { error: "Missing user parameter" }, status: 400 };
-        }
-
-        const data = await getCurrentlyPlaying(username);
-        return { json: data, status: 200 };
-    } catch (err) {
-        return { json: { error: err?.message }, status: 500 };
     }
 }
