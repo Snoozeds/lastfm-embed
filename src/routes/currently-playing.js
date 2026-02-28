@@ -23,18 +23,6 @@ function escapeHtml(str) {
 
 function renderTemplate(template, data) {
     template = template.replace(
-        /{{#ifNowPlaying}}([\s\S]*?){{else}}([\s\S]*?){{\/ifNowPlaying}}/g,
-        (_, ifBlock, elseBlock) => (data.nowPlaying ? ifBlock : elseBlock)
-    );
-    template = template.replace(
-        /{{#ifNowPlaying}}([\s\S]*?){{\/ifNowPlaying}}/g,
-        (_, ifBlock) => (data.nowPlaying ? ifBlock : "")
-    );
-    template = template.replace(
-        /{{#ifAlbum}}([\s\S]*?){{\/ifAlbum}}/g,
-        (_, block) => (data.albumName ? block : "")
-    );
-    template = template.replace(
         /{{#ifShowTitle}}([\s\S]*?){{\/ifShowTitle}}/g,
         (_, block) => (data.showTitle ? block : "")
     );
@@ -105,7 +93,9 @@ export default async function currentlyPlayingRoute(req) {
             themeUrl: theme.url,
             borderSize: borderSize,
             borderRadius: borderRadius,
-            nowPlaying: currentlyPlayingData.nowPlaying,
+            nowPlaying: currentlyPlayingData.nowPlaying ? "" : "none",
+            notPlayingDisplay: currentlyPlayingData.nowPlaying ? "none" : "",
+            albumDisplay: currentlyPlayingData.track?.album?.name ? "" : "none",
             trackImage: currentlyPlayingData.track?.image || "/images/default.jpg",
             trackName: currentlyPlayingData.track?.name || "",
             trackUrl: currentlyPlayingData.track?.url || "#",
@@ -121,7 +111,7 @@ export default async function currentlyPlayingRoute(req) {
         };
 
         const html = renderTemplate(template, renderData);
-        setCache(cacheKey, html, 30); // cache 30 seconds
+        setCache(cacheKey, html, 10); // cache 10 seconds
 
         return { html, status: 200 };
     } catch (err) {
@@ -129,5 +119,29 @@ export default async function currentlyPlayingRoute(req) {
             html: `<p>Error: ${escapeHtml(err?.message)}</p>`,
             status: 500
         };
+    }
+}
+
+// JSON Endpoint
+export async function currentlyPlayingJsonRoute(req) {
+    try {
+        let url;
+        if (typeof req === "string") {
+            url = new URL(req);
+        } else if (req.url) {
+            url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+        } else {
+            throw new Error("Invalid request object");
+        }
+
+        const username = url.searchParams.get("user");
+        if (!username) {
+            return { json: { error: "Missing user parameter" }, status: 400 };
+        }
+
+        const data = await getCurrentlyPlaying(username);
+        return { json: data, status: 200 };
+    } catch (err) {
+        return { json: { error: err?.message }, status: 500 };
     }
 }

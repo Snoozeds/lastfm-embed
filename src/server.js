@@ -6,6 +6,7 @@ import { parse } from "url";
 import "dotenv/config";
 
 import handlerCurrentlyPlaying from "../api/currently-playing.js";
+import handlerCurrentlyPlayingJson from "../api/currently-playing-json.js";
 import handlerThemes from "../api/themes.js";
 import handlerTopArtists from "../api/top-artists.js";
 import handlerTopTracks from "../api/top-tracks.js";
@@ -21,6 +22,7 @@ const server = http.createServer((req, res) => {
 
   // API routes
   if (pathname === "/api/currently-playing") return handlerCurrentlyPlaying(req, res);
+  if (pathname === "/api/currently-playing/json") return handlerCurrentlyPlayingJson(req, res);
   if (pathname === "/api/themes") return handlerThemes(req, res);
   if (pathname === "/api/top-artists") return handlerTopArtists(req, res);
   if (pathname === "/api/top-tracks") return handlerTopTracks(req, res);

@@ -40,7 +40,8 @@
             <div class="flex flex-col gap-2">
                 <label class="flex flex-col text-sm">
                     Theme
-                    <select id="theme" class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
+                    <select id="theme"
+                        class="w-full bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1"></select>
                 </label>
 
                 <!-- Custom colours toggle -->
@@ -51,7 +52,8 @@
 
                 <!-- Custom colour pickers -->
                 <div id="customColorsPanel" class="hidden flex flex-col gap-2 pl-2 border-l-2 border-gray-600">
-                    <p class="text-xs text-gray-400">Each override is applied on top of the selected theme. Click ✕ to reset to the theme default.</p>
+                    <p class="text-xs text-gray-400">Each override is applied on top of the selected theme. Click ✕ to
+                        reset to the theme default.</p>
 
                     <div class="grid grid-cols-2 gap-x-4 gap-y-3">
 
@@ -63,7 +65,8 @@
                                 <input type="text" id="bgColorText" maxlength="9" placeholder="theme default"
                                     class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
                                 <button type="button" data-clear="bgColor"
-                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1"
+                                    title="Reset">✕</button>
                             </div>
                         </div>
 
@@ -75,7 +78,8 @@
                                 <input type="text" id="textColorText" maxlength="9" placeholder="theme default"
                                     class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
                                 <button type="button" data-clear="textColor"
-                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1"
+                                    title="Reset">✕</button>
                             </div>
                         </div>
 
@@ -87,7 +91,8 @@
                                 <input type="text" id="urlColorText" maxlength="9" placeholder="theme default"
                                     class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
                                 <button type="button" data-clear="urlColor"
-                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1"
+                                    title="Reset">✕</button>
                             </div>
                         </div>
 
@@ -99,7 +104,8 @@
                                 <input type="text" id="scrobbleColorText" maxlength="9" placeholder="theme default"
                                     class="flex-1 min-w-0 bg-gray-700 text-gray-200 border border-gray-600 rounded px-2 py-1 text-xs font-mono">
                                 <button type="button" data-clear="scrobbleColor"
-                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1" title="Reset">✕</button>
+                                    class="clear-color shrink-0 text-gray-400 hover:text-red-400 text-xs px-1"
+                                    title="Reset">✕</button>
                             </div>
                         </div>
 
@@ -256,9 +262,9 @@
 
         // Custom colour logic
         const COLOR_FIELDS = [
-            { param: "bgColor",       picker: "bgColor",       text: "bgColorText",       themeKey: "bg"       },
-            { param: "textColor",     picker: "textColor",     text: "textColorText",     themeKey: "text"     },
-            { param: "urlColor",      picker: "urlColor",      text: "urlColorText",      themeKey: "url"      },
+            { param: "bgColor", picker: "bgColor", text: "bgColorText", themeKey: "bg" },
+            { param: "textColor", picker: "textColor", text: "textColorText", themeKey: "text" },
+            { param: "urlColor", picker: "urlColor", text: "urlColorText", themeKey: "url" },
             { param: "scrobbleColor", picker: "scrobbleColor", text: "scrobbleColorText", themeKey: "scrobble" },
         ];
 
@@ -434,11 +440,11 @@
             const endpoint = endpointSel.value;
             const params = new URLSearchParams({
                 user,
-                lang:         document.getElementById("lang").value,
-                theme:        document.getElementById("theme").value,
-                borderSize:   document.getElementById("borderSize").value,
+                lang: document.getElementById("lang").value,
+                theme: document.getElementById("theme").value,
+                borderSize: document.getElementById("borderSize").value,
                 borderRadius: document.getElementById("borderRadius").value,
-                showTitle:    document.getElementById("showTitle").value,
+                showTitle: document.getElementById("showTitle").value,
             });
 
             // Append custom colour overrides (if any)
@@ -468,25 +474,13 @@
             document.getElementById("urlOutput").value = url;
 
             showLoading();
-            try {
-                const htmlContent = await fetchHtmlPreview(endpoint, params);
-
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const previewUrl = URL.createObjectURL(blob);
-                document.getElementById("preview").src = previewUrl;
-
-                // Clean up previous blob URL
-                if (document.getElementById("preview").previousBlobUrl) {
-                    URL.revokeObjectURL(document.getElementById("preview").previousBlobUrl);
-                }
-                document.getElementById("preview").previousBlobUrl = previewUrl;
-
-            } catch (error) {
-                console.error("Failed to fetch API data:", error);
-                showError(`Failed to load preview: ${error.message}`);
-            } finally {
+            const preview = document.getElementById("preview");
+            preview.onload = hideLoading;
+            preview.onerror = () => {
                 hideLoading();
-            }
+                showError("Failed to load preview.");
+            };
+            preview.src = url;
         });
 
         document.getElementById("copyBtn").addEventListener("click", () => {

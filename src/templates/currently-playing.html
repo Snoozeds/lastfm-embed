@@ -12,17 +12,14 @@
             <a class="profile-link" href="{{userUrl}}" target="_blank">{{username}}</a>{{currentlyPlayingLabel}}
         </h3>
         {{/ifShowTitle}}
-        {{#ifNowPlaying}}
-        <div class="track-card">
-            <img src="{{trackImage}}" alt="{{trackName}} cover" />
+        <div id="cp-now-playing" class="track-card" style="display:{{nowPlaying}}">
+            <img id="cp-track-image" src="{{trackImage}}" alt="{{trackName}} cover" />
             <div class="track-info">
-                <span class="track-name"><a href="{{trackUrl}}" target="_blank">{{trackName}}</a></span>
-                <span class="artist-name"><a href="{{artistUrl}}" target="_blank">{{artistName}}</a></span>
-                {{#ifAlbum}}
-                <span class="album-name"><a href="{{albumUrl}}" target="_blank">{{albumName}}</a></span>
-                {{/ifAlbum}}
+                <span class="track-name"><a id="cp-track-link" href="{{trackUrl}}" target="_blank"><span id="cp-track-name">{{trackName}}</span></a></span>
+                <span class="artist-name"><a id="cp-artist-link" href="{{artistUrl}}" target="_blank"><span id="cp-artist-name">{{artistName}}</span></a></span>
+                <span id="cp-album-row" class="album-name" style="display:{{albumDisplay}}"><a id="cp-album-link" href="{{albumUrl}}" target="_blank"><span id="cp-album-name">{{albumName}}</span></a></span>
                 <span class="playing-label">
-                    {{nowPlayingLabel}}
+                    <span id="cp-now-playing-label">{{nowPlayingLabel}}</span>
                     <svg class="eq-bars" viewBox="0 0 64 32" width="32" height="16" xmlns="http://www.w3.org/2000/svg"
                         aria-hidden="true" focusable="false">
                         <rect class="bar" x="4" y="8" width="6" height="16" rx="2"></rect>
@@ -33,9 +30,7 @@
                 </span>
             </div>
         </div>
-        {{else}}
-        <p>{{notPlayingLabel}}</p>
-        {{/ifNowPlaying}}
+        <p id="cp-not-playing" style="display:{{notPlayingDisplay}}">{{notPlayingLabel}}</p>
     </div>
     
     <style>
@@ -139,5 +134,79 @@
             }
         }
     </style>
+    <script>
+    // Update embed without having to refresh page
+    (function () {
+        // Values at render time
+        const username = "{{username}}";
+        const nowPlayingLabel = "{{nowPlayingLabel}}";
+        const notPlayingLabel = "{{notPlayingLabel}}";
+        const POLL_INTERVAL = 15000; // Poll every 15s update currently listening status.
+        const DEFAULT_IMAGE = "/images/default.jpg";
+
+        function buildJsonUrl() {
+            const params = new URLSearchParams(window.location.search);
+            if (!params.has("user")) params.set("user", username);
+            return "/api/currently-playing/json?" + params.toString();
+        }
+
+        function show(el) { if (el) el.style.display = ""; }
+        function hide(el) { if (el) el.style.display = "none"; }
+        function setText(el, text) { if (el) el.textContent = text; }
+        function setHref(el, href) { if (el) el.href = href || "#"; }
+        function setSrc(el, src) { if (el && el.src !== src) el.src = src; }
+
+        async function poll() {
+            try {
+                const res = await fetch(buildJsonUrl());
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const nowPlayingEl  = document.getElementById("cp-now-playing");
+                const notPlayingEl  = document.getElementById("cp-not-playing");
+                const trackImage    = document.getElementById("cp-track-image");
+                const trackLink     = document.getElementById("cp-track-link");
+                const trackName     = document.getElementById("cp-track-name");
+                const artistLink    = document.getElementById("cp-artist-link");
+                const artistName    = document.getElementById("cp-artist-name");
+                const albumRow      = document.getElementById("cp-album-row");
+                const albumLink     = document.getElementById("cp-album-link");
+                const albumName     = document.getElementById("cp-album-name");
+                const nowPlayingLbl = document.getElementById("cp-now-playing-label");
+
+                if (data.nowPlaying && data.track) {
+                    const t = data.track;
+                    show(nowPlayingEl);
+                    hide(notPlayingEl);
+
+                    setSrc(trackImage, t.image || DEFAULT_IMAGE);
+                    if (trackImage) trackImage.alt = (t.name || "") + " cover";
+                    setHref(trackLink, t.url);
+                    setText(trackName, t.name || "");
+                    setHref(artistLink, t.artist?.url);
+                    setText(artistName, t.artist?.name || "");
+                    setText(nowPlayingLbl, nowPlayingLabel);
+
+                    if (t.album?.name) {
+                        show(albumRow);
+                        setHref(albumLink, t.album.url);
+                        setText(albumName, t.album.name);
+                    } else {
+                        hide(albumRow);
+                    }
+                } else {
+                    hide(nowPlayingEl);
+                    show(notPlayingEl);
+                    setText(notPlayingEl, notPlayingLabel);
+                }
+            } catch (_) {
+                // Network error
+            }
+        }
+
+        // Start polling after first interval
+        setInterval(poll, POLL_INTERVAL);
+    })();
+    </script>
 </body>
 </html>
