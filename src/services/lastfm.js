@@ -106,7 +106,12 @@ export async function getCurrentlyPlaying(username) {
             url: track.url || "#",
             artist: {
                 name: track.artist?.["#text"] || track.artist?.name || "",
-                url: track.artist?.url || ""
+                url: (() => {
+                    const artistName = track.artist?.["#text"] || track.artist?.name;
+                    return artistName
+                        ? `https://www.last.fm/music/${encodeURIComponent(artistName)}`
+                        : "";
+                })()
             },
             album: {
                 name: track.album?.["#text"] || "",
